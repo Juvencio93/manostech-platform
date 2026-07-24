@@ -3,8 +3,24 @@
 // Supabase Client
 // ======================================================
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-import { APP_CONFIG } from './constants.js';
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import { APP_CONFIG } from "./constants.js";
+
+// ======================================================
+// Validação das configurações
+// ======================================================
+
+if (!APP_CONFIG.SUPABASE_URL) {
+    throw new Error("SUPABASE_URL não configurada.");
+}
+
+if (!APP_CONFIG.SUPABASE_ANON_KEY) {
+    throw new Error("SUPABASE_ANON_KEY não configurada.");
+}
+
+// ======================================================
+// Cliente Supabase
+// ======================================================
 
 export const supabase = createClient(
 
@@ -20,7 +36,9 @@ export const supabase = createClient(
 
             persistSession: true,
 
-            detectSessionInUrl: true
+            detectSessionInUrl: true,
+
+            flowType: "pkce"
 
         },
 
@@ -38,7 +56,7 @@ export const supabase = createClient(
 
             headers: {
 
-                'X-Client-Info': `${APP_CONFIG.APP_NAME}/${APP_CONFIG.VERSION}`
+                "X-Client-Info": `${APP_CONFIG.APP_NAME}/${APP_CONFIG.VERSION}`
 
             }
 
@@ -47,3 +65,5 @@ export const supabase = createClient(
     }
 
 );
+
+export default supabase;
