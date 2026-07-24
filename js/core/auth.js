@@ -1,77 +1,121 @@
-import { supabase, supabaseAuth } from './supabase-client.js';
+/* ================================================================
+   ManosTech Platform – auth.js
+   Authentication & role-based permission system
+================================================================ */
 
-export const auth = {
+/* ── Demo users (fallback when Supabase not configured) ───────── */
+const DEMO_USERS = {
+  'admin@demo.com':    { password: 'admin123',   role: 'admin',       name: 'Admin Sistema' },
+  'gerente@demo.com':  { password: 'gerente123', role: 'gerente',     name: 'Gerente Silva' },
+  'operador@demo.com': { password: 'op123',      role: 'operador',    name: 'Operador João' },
+  'viewer@demo.com':   { password: 'view123',    role: 'visualizador',name: 'Viewer Maria'  }
+};
+
+/* ── Role permissions ─────────────────────────────────────────── */
+const ROLE_PERMISSIONS = {
+  admin:        ['dashboard','eventos','empresas','visitantes','campanhas','relatorios',
+                 'financeiro','usuarios','unidades','funcionarios','configuracoes','perfil'],
+  gerente:      ['dashboard','eventos','empresas','visitantes','campanhas','relatorios',
+                 'unidades','funcionarios','configuracoes','perfil'],
+  operador:     ['dashboard','eventos','visitantes','campanhas','perfil'],
+  visualizador: ['dashboard','relatorios','perfil']
+};
+
+/* ── Storage keys ─────────────────────────────────────────────── */
+const USER_KEY  = 'mt_user';
+const TOKEN_KEY = 'mt_token';
+
+/* ================================================================
+   auth object – public API
+================================================================ */
+const auth = {
+
+  /**
+   * Login with email + password.
+   * Tries Supabase first; falls back to demo users.
+   */
   async login(email, password) {
+    const normalized = email.trim().toLowerCase();
+
+    // Try Supabase if configured
     try {
-      const result = await supabaseAuth.signIn(email, password);
-      
-      if (result.success) {
-        console.log('✅ Login realizado com sucesso');
-        return {
-          success: true,
-          user: result.data.user,
-          token: result.data.session.access_token
-        };
-      } else {
-        console.error('❌ Erro ao fazer login:', result.error);
-        return { success: false, message: result.error };
+      const { supabaseAuth } = await import('./supabase-client.js').catch(() => ({}));
+      if (supabaseAuth) {
+        const result = await supabaseAuth.signIn(normalized, password);
+        if (result.success) {
+          const user = {
+            email: normalized,
+            name:  result.data.user?.user_metadata?.name || normalized,
+            role:  result.data.user?.user_metadata?.role || 'visualizador',
+            id:    result.data.user?.id
+          };
+          this._saveUser(user, result.data.session?.access_token);
+          return { success: true, user };
+        }
       }
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      return { success: false, message: error.message };
+    } catch (_) { /* Supabase not configured – use demo */ }
+
+    // Demo fallback
+    const demo = DEMO_USERS[normalized];
+    if (demo && demo.password === password) {
+      const user = { email: normalized, role: demo.role, name: demo.name };
+      this._saveUser(user, 'demo-token');
+      return { success: true, user };
     }
+
+    return { success: false, message: 'Email ou senha incorretos.' };
   },
 
+  /** Logout – clear local storage. */
   async logout() {
     try {
-      const result = await supabaseAuth.signOut();
-      if (result.success) {
-        console.log('✅ Logout realizado');
-      }
-      return result;
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
-      return { success: false, message: error.message };
-    }
+      const { supabaseAuth } = await import('./supabase-client.js').catch(() => ({}));
+      if (supabaseAuth) await supabaseAuth.signOut();
+    } catch (_) {}
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    return { success: true };
   },
 
-  checkAuth() {
-    const token = localStorage.getItem('supabase_token');
-    const user = localStorage.getItem('user');
-    return !!(token && user);
+  /** Returns true if a user session exists. */
+  isAuthenticated() {
+    return !!localStorage.getItem(USER_KEY);
   },
 
+  /** Returns the stored user object or null. */
   getUser() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (e) {
-        console.error('Erro ao parsear usuário:', e);
-        return null;
-      }
-    }
-    return null;
-  },
-
-  getToken() {
-    return localStorage.getItem('supabase_token');
-  },
-
-  async register(email, password, userData = {}) {
     try {
-      const result = await supabaseAuth.signUp(email, password);
-      
-      if (result.success) {
-        console.log('✅ Registro realizado');
-        return { success: true, user: result.data.user };
-      } else {
-        console.error('❌ Erro ao registrar:', result.error);
-        return { success: false, message: result.error };
-      }
-    } catch (error) {
-      console.error('Erro ao registrar:', error);
-      return { success: false, message: error.message };
-    }
+      const raw = localStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  },
+
+  /** Returns the JWT token or null. */
+  getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+  },
+
+  /**
+   * Returns the list of modules the current user can access.
+   * @param {string} [role] – defaults to the logged-in user's role
+   */
+  getAllowedModules(role) {
+    const userRole = role || this.getUser()?.role;
+    return ROLE_PERMISSIONS[userRole] || ROLE_PERMISSIONS['visualizador'];
+  },
+
+  /**
+   * Returns true if the current user can access the given module.
+   */
+  canAccess(module) {
+    return this.getAllowedModules().includes(module);
+  },
+
+  /** @private */
+  _saveUser(user, token) {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    if (token) localStorage.setItem(TOKEN_KEY, token);
   }
 };
+
+export { auth, ROLE_PERMISSIONS, DEMO_USERS };
