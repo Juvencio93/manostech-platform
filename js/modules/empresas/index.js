@@ -1,50 +1,33 @@
-import { empresaService } from '../../services/empresa.service.js';
-
 const empresasModule = {
   async init() {
     const contentArea = document.getElementById('contentArea');
     
-    try {
-      const empresas = await empresaService.getAllEmpresas();
-      
-      contentArea.innerHTML = `
-        <div class="fade-in">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
-            <h2 style="margin: 0;">Empresas</h2>
-            <button class="btn btn-primary" id="novaEmpresaBtn">+ Nova Empresa</button>
-          </div>
+    contentArea.innerHTML = `
+      <div style="animation: slideInUp 0.3s ease-out;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+          <h1 style="margin: 0;">🏢 Empresas</h1>
+          <button class="btn btn-primary">+ Nova Empresa</button>
+        </div>
 
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--spacing-lg);">
           <div class="card">
+            <div class="card-header">
+              <h3 style="margin: 0;">Empresa Demo</h3>
+            </div>
             <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>CNPJ</th>
-                      <th>Telefone</th>
-                      <th>Email</th>
-                      <th>Status</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="empresasBody">
-                    <tr><td colspan="6" style="text-align: center; color: var(--text-light);">Nenhuma empresa encontrada</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
+              <p><strong>Email:</strong> contato@demo.com</p>
+              <p><strong>Telefone:</strong> (11) 3000-0000</p>
+              <p><strong>Status:</strong> <span style="color: var(--success-color);">● Ativo</span></p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-sm btn-ghost">Editar</button>
+              <button class="btn btn-sm btn-ghost">Deletar</button>
             </div>
           </div>
         </div>
-      `;
-
-      document.getElementById('novaEmpresaBtn')?.addEventListener('click', () => {
-        alert('Implementar modal de nova empresa');
-      });
-    } catch (error) {
-      console.error('Erro ao carregar empresas:', error);
-      contentArea.innerHTML = '<p style="color: var(--danger-color);">Erro ao carregar empresas</p>';
-    }
+      </div>
+    `;
   }
 };
 

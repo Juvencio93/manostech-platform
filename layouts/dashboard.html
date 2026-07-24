@@ -1,72 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - ManosTech Platform</title>
-  <link rel="stylesheet" href="../assets/css/app.css">
-</head>
-<body>
-  <div class="dashboard-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-logo">ManosTech</div>
-      <nav>
-        <ul class="sidebar-menu">
-          <li><a href="#/dashboard" class="nav-link active" data-module="dashboard">📊 Dashboard</a></li>
-          <li><a href="#/eventos" class="nav-link" data-module="eventos">🎉 Eventos</a></li>
-          
-          <li style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.85rem; opacity: 0.7; text-transform: uppercase;">Administração</strong></li>
-          <li><a href="#/empresas" class="nav-link" data-module="empresas">🏢 Empresas</a></li>
-          <li><a href="#/unidades" class="nav-link" data-module="unidades">🏪 Unidades</a></li>
-          <li><a href="#/usuarios" class="nav-link" data-module="usuarios">👥 Usuários</a></li>
-          <li><a href="#/funcionarios" class="nav-link" data-module="funcionarios">👔 Funcionários</a></li>
-          
-          <li style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.85rem; opacity: 0.7; text-transform: uppercase;">Marketing Local</strong></li>
-          <li><a href="#/visitantes" class="nav-link" data-module="marketing-local" data-view="visitantes">👁️ Visitantes</a></li>
-          <li><a href="#/campanhas" class="nav-link" data-module="marketing-local" data-view="campanhas">📢 Campanhas</a></li>
-          <li><a href="#/portal" class="nav-link" data-module="marketing-local" data-view="portal">🌐 Portal</a></li>
-          
-          <li style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255,255,255,0.1);"><strong style="font-size: 0.85rem; opacity: 0.7; text-transform: uppercase;">Sistema</strong></li>
-          <li><a href="#/relatorios" class="nav-link" data-module="relatorios">📈 Relatórios</a></li>
-          <li><a href="#/financeiro" class="nav-link" data-module="financeiro">💰 Financeiro</a></li>
-          <li><a href="#/configuracoes" class="nav-link" data-module="configuracoes">⚙️ Configurações</a></li>
-          <li><a href="#/perfil" class="nav-link" data-module="perfil">👤 Meu Perfil</a></li>
-        </ul>
-      </nav>
-    </aside>
+<nav class="navbar">
+  <div class="navbar-brand" style="display: flex; align-items: center; gap: var(--spacing-md);">
+    <button class="btn btn-icon btn-ghost" id="toggleSidebarBtn" style="display: none;">
+      ☰
+    </button>
+    <span>📊 ManosTech</span>
+  </div>
+  <div class="navbar-menu">
+    <span id="userEmail" style="color: var(--text-light); margin-right: var(--spacing-lg);">Usuário</span>
+    <button class="btn btn-ghost" id="logoutBtn">Sair</button>
+  </div>
+</nav>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <!-- Navbar -->
-      <nav class="navbar">
-        <div class="navbar-brand">
-          <button class="btn btn-icon btn-ghost" id="toggleSidebarBtn" style="display: none;">
-            ☰
-          </button>
-          <span id="pageTitle">Dashboard</span>
-        </div>
-        <div class="navbar-menu">
-          <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-            <span id="userEmail" style="color: var(--text-light);">usuario@example.com</span>
-            <button class="btn btn-ghost" id="logoutBtn">Sair</button>
-          </div>
-        </div>
-      </nav>
+<div class="main-container">
+  <aside class="sidebar">
+    <div class="sidebar-logo">ManosTech</div>
+    <nav>
+      <ul class="sidebar-menu">
+        <li><a href="#/dashboard" class="nav-link">📊 Dashboard</a></li>
+        <li><a href="#/eventos" class="nav-link">🎉 Eventos</a></li>
+        <li><a href="#/empresas" class="nav-link">🏢 Empresas</a></li>
+        <li><a href="#/unidades" class="nav-link">🏬 Unidades</a></li>
+        <li><a href="#/usuarios" class="nav-link">👥 Usuários</a></li>
+        <li><a href="#/visitantes" class="nav-link">👁️ Visitantes</a></li>
+        <li><a href="#/campanhas" class="nav-link">📢 Campanhas</a></li>
+        <li><a href="#/relatorios" class="nav-link">📈 Relatórios</a></li>
+        <li><a href="#/financeiro" class="nav-link">💰 Financeiro</a></li>
+        <li><a href="#/configuracoes" class="nav-link">⚙️ Configurações</a></li>
+        <li><a href="#/perfil" class="nav-link">👤 Perfil</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-      <!-- Content Area -->
-      <div class="content" id="contentArea">
-        <!-- Conteúdo dinâmico será carregado aqui -->
+  <div class="content">
+    <div id="contentArea">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Carregando...</p>
       </div>
-
-      <!-- Footer -->
-      <footer class="footer">
-        <p>&copy; 2024 ManosTech Platform. Todos os direitos reservados.</p>
-        <p style="font-size: 0.8rem; opacity: 0.7;">Versão 1.0.0 | Desenvolvido com ❤️</p>
-      </footer>
     </div>
   </div>
+</div>
 
-  <script type="module" src="../js/layouts/dashboard-init.js"></script>
-</body>
-</html>
+<script type="module">
+  import { auth } from '../js/core/auth.js';
+  import { session } from '../js/core/session.js';
+
+  // Atualizar email do usuário
+  const user = session.getUser() || auth.getUser();
+  if (user) {
+    document.getElementById('userEmail').textContent = user.email || 'Usuário';
+  }
+
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await auth.logout();
+    window.location.hash = '#/login';
+  });
+
+  // Highlight active link
+  window.addEventListener('hashchange', () => {
+    const currentPath = window.location.hash.slice(1) || '/dashboard';
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href').slice(1) === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  // Trigger on page load
+  window.dispatchEvent(new Event('hashchange'));
+</script>

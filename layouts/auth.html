@@ -1,55 +1,88 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - ManosTech Platform</title>
-  <link rel="stylesheet" href="../assets/css/app.css">
-</head>
-<body>
-  <div class="auth-layout">
-    <div class="auth-container">
-      <h1 style="text-align: center; color: var(--primary-color); margin-bottom: var(--spacing-xl);">ManosTech</h1>
-      
-      <form id="loginForm">
-        <div class="form-group required">
-          <label for="email">Email</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            placeholder="seu@email.com" 
-            required
-          >
-        </div>
+<div class="auth-container">
+  <div class="auth-form">
+    <h2>🔐 Login</h2>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          placeholder="seu@email.com"
+          required
+        >
+      </div>
 
-        <div class="form-group required">
-          <label for="password">Senha</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Digite sua senha" 
-            required
-          >
-        </div>
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="••••••••"
+          required
+        >
+      </div>
 
-        <div class="form-check">
-          <input type="checkbox" id="remember" name="remember">
-          <label for="remember">Lembrar-me</label>
-        </div>
+      <button type="submit" class="btn btn-primary w-full">
+        Entrar
+      </button>
 
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top: var(--spacing-lg);">
-          Entrar
-        </button>
-      </form>
-
-      <p style="text-align: center; margin-top: var(--spacing-lg); color: var(--text-light);">
-        Não tem uma conta? <a href="#/signup">Cadastre-se aqui</a>
+      <p style="text-align: center; margin-top: var(--spacing-lg); font-size: var(--font-size-sm);">
+        Não tem conta? <a href="#/register">Registre-se aqui</a>
       </p>
+    </form>
+
+    <div id="errorMessage" style="display: none; margin-top: var(--spacing-lg);">
+      <!-- Mensagem de erro aqui -->
     </div>
   </div>
+</div>
 
-  <script type="module" src="../js/layouts/auth-init.js"></script>
-</body>
-</html>
+<script type="module">
+  import { auth } from '../js/core/auth.js';
+  import { session } from '../js/core/session.js';
+
+  const loginForm = document.getElementById('loginForm');
+  const errorMessage = document.getElementById('errorMessage');
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      console.log('Tentando fazer login com:', email);
+      
+      const result = await auth.login(email, password);
+      
+      if (result.success) {
+        console.log('✅ Login realizado com sucesso!');
+        
+        // Inicializar sessão
+        await session.initialize();
+        
+        // Redirecionar para dashboard
+        window.location.hash = '#/dashboard';
+      } else {
+        console.error('❌ Erro ao fazer login:', result.message);
+        errorMessage.style.display = 'block';
+        errorMessage.innerHTML = `
+          <div style="background-color: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: var(--spacing-md); border-radius: var(--radius-md);">
+            ${result.message || 'Erro ao fazer login. Verifique suas credenciais.'}
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      errorMessage.style.display = 'block';
+      errorMessage.innerHTML = `
+        <div style="background-color: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: var(--spacing-md); border-radius: var(--radius-md);">
+          ${error.message || 'Erro ao fazer login'}
+        </div>
+      `;
+    }
+  });
+</script>
