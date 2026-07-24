@@ -1,47 +1,50 @@
-// Utilitários gerais
 export const utils = {
-  // Formatar data
-  formatDate(date) {
-    return new Date(date).toLocaleDateString('pt-BR');
+  // Delay async
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   },
 
-  // Formatar moeda
-  formatCurrency(value) {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
+  // Deep clone
+  deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
   },
 
-  // Validar email
-  isValidEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+  // Merge objects
+  merge(target, source) {
+    return { ...target, ...source };
   },
 
-  // Gerar UUID
-  generateId() {
-    return crypto.randomUUID();
+  // Filter object keys
+  pick(obj, keys) {
+    return keys.reduce((result, key) => {
+      if (key in obj) result[key] = obj[key];
+      return result;
+    }, {});
   },
 
-  // Debounce
-  debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
+  // Omit object keys
+  omit(obj, keys) {
+    return Object.keys(obj).reduce((result, key) => {
+      if (!keys.includes(key)) result[key] = obj[key];
+      return result;
+    }, {});
   },
 
-  // Query string parser
-  parseQueryString(qs) {
-    const params = new URLSearchParams(qs);
-    return Object.fromEntries(params);
+  // Group array by key
+  groupBy(array, key) {
+    return array.reduce((result, item) => {
+      const group = item[key];
+      if (!result[group]) result[group] = [];
+      result[group].push(item);
+      return result;
+    }, {});
   },
+
+  // Sort array
+  sortBy(array, key, order = 'asc') {
+    return [...array].sort((a, b) => {
+      if (order === 'asc') return a[key] > b[key] ? 1 : -1;
+      return a[key] < b[key] ? 1 : -1;
+    });
+  }
 };
-
-export default utils;

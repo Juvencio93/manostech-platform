@@ -1,45 +1,55 @@
-import { supabase } from './auth.js';
-
-// API Call Handler
 export const api = {
-  async query(table, options = {}) {
-    let query = supabase.from(table).select(options.select || '*');
+  baseUrl: process.env.API_URL || 'http://localhost:3000/api',
 
-    if (options.filter) {
-      for (const [key, value] of Object.entries(options.filter)) {
-        query = query.eq(key, value);
+  async request(endpoint, options = {}) {
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
+    // Adicionar token de autenticação se existir
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
+
+      return await response.json();
+    } catch (error) {
+      console.error('API Request Error:', error);
+      throw error;
     }
-
-    if (options.limit) {
-      query = query.limit(options.limit);
-    }
-
-    if (options.order) {
-      query = query.order(options.order.column, { ascending: options.order.ascending });
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
   },
 
-  async insert(table, data) {
-    const { data: result, error } = await supabase.from(table).insert([data]);
-    if (error) throw error;
-    return result;
+  get(endpoint) {
+    return this.request(endpoint, { method: 'GET' });
   },
 
-  async update(table, id, data) {
-    const { data: result, error } = await supabase.from(table).update(data).eq('id', id);
-    if (error) throw error;
-    return result;
+  post(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
   },
 
-  async delete(table, id) {
-    const { error } = await supabase.from(table).delete().eq('id', id);
-    if (error) throw error;
+  put(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
   },
+
+  delete(endpoint) {
+    return this.request(endpoint, { method: 'DELETE' });
+  }
 };
-
-export default api;

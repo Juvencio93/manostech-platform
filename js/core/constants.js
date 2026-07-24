@@ -1,36 +1,54 @@
-// Constantes da aplicação
-export const CONSTANTS = {
+export const constants = {
+  // Roles
+  ROLES: {
+    ADMIN: 'admin',
+    MANAGER: 'manager',
+    USER: 'user'
+  },
+
   // Status
   STATUS: {
     ATIVO: 'ativo',
     INATIVO: 'inativo',
     PENDENTE: 'pendente',
+    CANCELADO: 'cancelado'
   },
 
-  // Tipos de evento
-  TIPO_EVENTO: {
-    WORKSHOP: 'workshop',
-    PALESTRA: 'palestra',
-    MEETUP: 'meetup',
-    CONFERENCIA: 'conferencia',
+  // Tipos de eventos
+  TIPOS_EVENTO: {
+    EVENTO: 'evento',
+    PROMOCAO: 'promocao',
+    WORKSHOP: 'workshop'
   },
 
-  // Permissões
-  PERMISSIONS: {
-    ADMIN: 'admin',
-    GERENTE: 'gerente',
-    USUARIO: 'usuario',
+  // Tipos de campanhas
+  TIPOS_CAMPANHA: {
+    PROMOCAO: 'promocao',
+    DESCONTO: 'desconto',
+    FIDELIZACAO: 'fidelizacao'
+  },
+
+  // Tipos de unidades
+  TIPOS_UNIDADE: {
+    LOJA: 'loja',
+    RESTAURANTE: 'restaurante',
+    CAFETERIA: 'cafeteria',
+    ACADEMIA: 'academia',
+    FARMACIA: 'farmacia'
+  },
+
+  // Formatos de relatório
+  FORMATOS_RELATORIO: {
+    PDF: 'pdf',
+    XLSX: 'xlsx',
+    CSV: 'csv'
   },
 
   // Mensagens
   MESSAGES: {
-    SUCESSO: 'Operação realizada com sucesso!',
-    ERRO: 'Erro ao processar requisição',
-    NENHUM_DADO: 'Nenhum dado encontrado',
-  },
-
-  // URLs
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || '',
+    SUCCESS: 'Operação realizada com sucesso',
+    ERROR: 'Erro ao realizar operação',
+    CONFIRM: 'Tem certeza que deseja continuar?',
+    LOADING: 'Carregando...'
+  }
 };
-
-export default CONSTANTS;
