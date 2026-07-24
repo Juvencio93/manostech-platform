@@ -1,42 +1,54 @@
-import { auth } from './auth.js';
-import { storage } from './storage.js';
-
-// Session Management
 export const session = {
-  async init() {
+  data: {
+    user: null,
+    permissions: [],
+    preferences: {}
+  },
+
+  async initialize() {
     try {
-      const user = await auth.getCurrentUser();
-      if (user) {
-        this.setUser(user);
-      }
+      // Carregar dados da sessão
+      const user = this.loadUser();
+      this.data.user = user;
+
+      // TODO: Carregar permissões do backend
+      // TODO: Carregar preferências do usuário
     } catch (error) {
       console.error('Erro ao inicializar sessão:', error);
     }
   },
 
-  setUser(user) {
-    storage.set('user', user);
+  loadUser() {
+    const email = localStorage.getItem('user_email');
+    return {
+      email: email,
+      role: 'admin' // TODO: Carregar do backend
+    };
   },
 
   getUser() {
-    return storage.get('user');
+    return this.data.user;
   },
 
-  isAuthenticated() {
-    return !!this.getUser();
+  hasPermission(permission) {
+    return this.data.permissions.includes(permission);
   },
 
-  clear() {
-    storage.remove('user');
+  setPreference(key, value) {
+    this.data.preferences[key] = value;
+    localStorage.setItem(`pref_${key}`, JSON.stringify(value));
   },
 
-  async requireAuth() {
-    if (!this.isAuthenticated()) {
-      window.location.hash = '#/login';
-      return false;
-    }
-    return true;
+  getPreference(key) {
+    const stored = localStorage.getItem(`pref_${key}`);
+    return stored ? JSON.parse(stored) : this.data.preferences[key];
   },
+
+  destroy() {
+    this.data = {
+      user: null,
+      permissions: [],
+      preferences: {}
+    };
+  }
 };
-
-export default session;

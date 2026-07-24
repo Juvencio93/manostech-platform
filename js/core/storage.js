@@ -1,19 +1,18 @@
-// Local Storage Wrapper
 export const storage = {
   set(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error('Erro ao salvar no localStorage:', error);
+      console.error(`Erro ao salvar ${key}:`, error);
     }
   },
 
   get(key) {
     try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : null;
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
     } catch (error) {
-      console.error('Erro ao ler do localStorage:', error);
+      console.error(`Erro ao ler ${key}:`, error);
       return null;
     }
   },
@@ -22,7 +21,7 @@ export const storage = {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error('Erro ao remover do localStorage:', error);
+      console.error(`Erro ao remover ${key}:`, error);
     }
   },
 
@@ -30,9 +29,7 @@ export const storage = {
     try {
       localStorage.clear();
     } catch (error) {
-      console.error('Erro ao limpar localStorage:', error);
+      console.error('Erro ao limpar storage:', error);
     }
-  },
+  }
 };
-
-export default storage;
