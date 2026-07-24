@@ -1,76 +1,78 @@
-// Gerenciamento de sessão com Supabase
-import { supabase } from './supabase-client.js';
+// ======================================================
+// Manos Tech Platform
+// Session Manager
+// ======================================================
 
-export const session = {
-  data: {
-    user: null,
-    preferences: {},
-    theme: 'light'
-  },
+import auth from "./auth.js";
 
-  async initialize() {
-    try {
-      // Obter sessão atual
-      const { data: { session: supabaseSession } } = await supabase.auth.getSession();
-      
-      if (supabaseSession?.user) {
-        this.data.user = supabaseSession.user;
-        console.log('✅ Sessão restaurada:', this.data.user.email);
-      }
+class Session {
 
-      // Carregar preferências
-      const savedPrefs = localStorage.getItem('user_prefs');
-      if (savedPrefs) {
-        this.data.preferences = JSON.parse(savedPrefs);
-      }
+    constructor() {
 
-      // Carregar tema
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        this.data.theme = savedTheme;
-      }
-    } catch (error) {
-      console.error('Erro ao inicializar sessão:', error);
+        this.initialized = false;
+
     }
-  },
 
-  setUser(user) {
-    this.data.user = user;
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
+    // ==================================================
+    // Inicializa a sessão
+    // ==================================================
+
+    async initialize() {
+
+        if (this.initialized) {
+            return true;
+        }
+
+        const authenticated = await auth.initialize();
+
+        this.initialized = true;
+
+        return authenticated;
+
     }
-  },
 
-  getUser() {
-    return this.data.user;
-  },
+    // ==================================================
+    // Sessão atual
+    // ==================================================
 
-  setPreference(key, value) {
-    this.data.preferences[key] = value;
-    localStorage.setItem('user_prefs', JSON.stringify(this.data.preferences));
-  },
+    get() {
 
-  getPreference(key) {
-    return this.data.preferences[key];
-  },
+        return auth.getSession();
 
-  setTheme(theme) {
-    this.data.theme = theme;
-    localStorage.setItem('theme', theme);
-  },
+    }
 
-  getTheme() {
-    return this.data.theme;
-  },
+    // ==================================================
+    // Usuário atual
+    // ==================================================
 
-  clear() {
-    this.data = {
-      user: null,
-      preferences: {},
-      theme: 'light'
-    };
-    localStorage.removeItem('user');
-    localStorage.removeItem('user_prefs');
-    localStorage.removeItem('theme');
-  }
-};
+    getUser() {
+
+        return auth.getUser();
+
+    }
+
+    // ==================================================
+    // Está autenticado?
+    // ==================================================
+
+    isAuthenticated() {
+
+        return auth.isAuthenticated();
+
+    }
+
+    // ==================================================
+    // Encerra sessão
+    // ==================================================
+
+    async destroy() {
+
+        await auth.logout();
+
+    }
+
+}
+
+const session = new Session();
+
+export default session;
