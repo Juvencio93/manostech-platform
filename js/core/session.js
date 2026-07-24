@@ -10,6 +10,8 @@ export const session = {
 
   async initialize() {
     try {
+      // supabaseAuth.getSession() returns the session object directly (or null),
+      // not the raw { data: { session }, error } structure from supabase.auth.getSession()
       const supabaseSession = await supabaseAuth.getSession();
 
       if (supabaseSession?.user) {
