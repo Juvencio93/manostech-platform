@@ -4,9 +4,8 @@
   background-color: var(--white);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
   overflow: hidden;
-  transition: all var(--transition-base) ease;
+  transition: all var(--transition-fast);
 }
 
 .card:hover {
@@ -16,7 +15,7 @@
 .card-header {
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--border-color);
-  background-color: var(--gray-50);
+  background-color: var(--light-bg);
 }
 
 .card-body {
@@ -26,46 +25,57 @@
 .card-footer {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--border-color);
-  background-color: var(--gray-50);
+  background-color: var(--light-bg);
+  text-align: right;
 }
 
-/* Stat Card */
+/* Stat Cards */
 .stat-card {
   background-color: var(--white);
   border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
   padding: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
-  border-left: 4px solid var(--primary-color);
+  text-align: center;
+  transition: all var(--transition-fast);
 }
 
-.stat-card.success {
-  border-left-color: var(--success-color);
-}
-
-.stat-card.warning {
-  border-left-color: var(--warning-color);
-}
-
-.stat-card.danger {
-  border-left-color: var(--danger-color);
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-card-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--text-light);
-  font-weight: 600;
-  text-transform: uppercase;
   margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stat-card-value {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  font-weight: bold;
   color: var(--text-dark);
+  margin-bottom: var(--spacing-md);
 }
 
 .stat-card-footer {
-  margin-top: var(--spacing-md);
-  font-size: 0.875rem;
-  color: var(--text-light);
+  font-size: var(--font-size-sm);
+  color: var(--success-color);
+}
+
+.stat-card.success {
+  border-left: 4px solid var(--success-color);
+}
+
+.stat-card.warning {
+  border-left: 4px solid var(--warning-color);
+}
+
+.stat-card.danger {
+  border-left: 4px solid var(--danger-color);
+}
+
+.stat-card.info {
+  border-left: 4px solid var(--info-color);
 }
