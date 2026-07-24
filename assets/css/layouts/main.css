@@ -1,0 +1,96 @@
+/* Dashboard Layout */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.dashboard-layout .sidebar {
+  width: 250px;
+}
+
+.dashboard-layout .main-content {
+  flex: 1;
+  margin-left: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-layout .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.dashboard-layout .content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  background-color: var(--light-bg);
+}
+
+.dashboard-layout .footer {
+  margin-top: auto;
+}
+
+/* Auth Layout */
+
+.auth-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.auth-layout .auth-container {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-2xl);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Portal Layout */
+
+.portal-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-layout .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.portal-layout .content {
+  flex: 1;
+  padding: var(--spacing-xl);
+}
+
+.portal-layout .footer {
+  margin-top: auto;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .dashboard-layout .sidebar {
+    position: fixed;
+    left: -250px;
+    transition: left var(--transition-base) ease;
+    width: 250px;
+    height: 100vh;
+    z-index: 98;
+  }
+
+  .dashboard-layout.sidebar-open .sidebar {
+    left: 0;
+  }
+
+  .dashboard-layout .main-content {
+    margin-left: 0;
+  }
+}

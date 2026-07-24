@@ -1,0 +1,81 @@
+/* Forms */
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-group.required label::after {
+  content: ' *';
+  color: var(--danger-color);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-help {
+  display: block;
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.form-error {
+  display: block;
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--danger-color);
+}
+
+.form-group.is-invalid input,
+.form-group.is-invalid textarea,
+.form-group.is-invalid select {
+  border-color: var(--danger-color);
+}
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+/* Form Control */
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Checkbox & Radio */
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.form-check input[type="checkbox"],
+.form-check input[type="radio"] {
+  width: auto;
+  margin-right: var(--spacing-md);
+  cursor: pointer;
+}
+
+.form-check label {
+  margin-bottom: 0;
+  cursor: pointer;
+  font-weight: 400;
+}
