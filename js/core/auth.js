@@ -1,30 +1,21 @@
+import { supabase, supabaseAuth } from './supabase-client.js';
+
 export const auth = {
-  async checkAuth() {
-    try {
-      // Verificar se token existe no localStorage
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        return false;
-      }
-
-      // TODO: Validar token com backend/Supabase
-      return true;
-    } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
-      return false;
-    }
-  },
-
   async login(email, password) {
     try {
-      // TODO: Chamar API de login (Supabase)
-      // Por enquanto, mock
-      if (email && password) {
-        localStorage.setItem('auth_token', 'mock_token');
-        localStorage.setItem('user_email', email);
-        return { success: true, message: 'Login realizado com sucesso' };
+      const result = await supabaseAuth.signIn(email, password);
+      
+      if (result.success) {
+        console.log('✅ Login realizado com sucesso');
+        return {
+          success: true,
+          user: result.data.user,
+          token: result.data.session.access_token
+        };
+      } else {
+        console.error('❌ Erro ao fazer login:', result.error);
+        return { success: false, message: result.error };
       }
-      return { success: false, message: 'Credenciais inválidas' };
     } catch (error) {
       console.error('Erro ao fazer login:', error);
       return { success: false, message: error.message };
@@ -33,22 +24,54 @@ export const auth = {
 
   async logout() {
     try {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_email');
-      return { success: true };
+      const result = await supabaseAuth.signOut();
+      if (result.success) {
+        console.log('✅ Logout realizado');
+      }
+      return result;
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
-      return { success: false };
+      return { success: false, message: error.message };
     }
   },
 
-  getToken() {
-    return localStorage.getItem('auth_token');
+  checkAuth() {
+    const token = localStorage.getItem('supabase_token');
+    const user = localStorage.getItem('user');
+    return !!(token && user);
   },
 
   getUser() {
-    return {
-      email: localStorage.getItem('user_email')
-    };
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch (e) {
+        console.error('Erro ao parsear usuário:', e);
+        return null;
+      }
+    }
+    return null;
+  },
+
+  getToken() {
+    return localStorage.getItem('supabase_token');
+  },
+
+  async register(email, password, userData = {}) {
+    try {
+      const result = await supabaseAuth.signUp(email, password);
+      
+      if (result.success) {
+        console.log('✅ Registro realizado');
+        return { success: true, user: result.data.user };
+      } else {
+        console.error('❌ Erro ao registrar:', result.error);
+        return { success: false, message: result.error };
+      }
+    } catch (error) {
+      console.error('Erro ao registrar:', error);
+      return { success: false, message: error.message };
+    }
   }
 };

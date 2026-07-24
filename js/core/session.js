@@ -1,54 +1,76 @@
+// Gerenciamento de sessão com Supabase
+import { supabase } from './supabase-client.js';
+
 export const session = {
   data: {
     user: null,
-    permissions: [],
-    preferences: {}
+    preferences: {},
+    theme: 'light'
   },
 
   async initialize() {
     try {
-      // Carregar dados da sessão
-      const user = this.loadUser();
-      this.data.user = user;
+      // Obter sessão atual
+      const { data: { session: supabaseSession } } = await supabase.auth.getSession();
+      
+      if (supabaseSession?.user) {
+        this.data.user = supabaseSession.user;
+        console.log('✅ Sessão restaurada:', this.data.user.email);
+      }
 
-      // TODO: Carregar permissões do backend
-      // TODO: Carregar preferências do usuário
+      // Carregar preferências
+      const savedPrefs = localStorage.getItem('user_prefs');
+      if (savedPrefs) {
+        this.data.preferences = JSON.parse(savedPrefs);
+      }
+
+      // Carregar tema
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        this.data.theme = savedTheme;
+      }
     } catch (error) {
       console.error('Erro ao inicializar sessão:', error);
     }
   },
 
-  loadUser() {
-    const email = localStorage.getItem('user_email');
-    return {
-      email: email,
-      role: 'admin' // TODO: Carregar do backend
-    };
+  setUser(user) {
+    this.data.user = user;
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
   },
 
   getUser() {
     return this.data.user;
   },
 
-  hasPermission(permission) {
-    return this.data.permissions.includes(permission);
-  },
-
   setPreference(key, value) {
     this.data.preferences[key] = value;
-    localStorage.setItem(`pref_${key}`, JSON.stringify(value));
+    localStorage.setItem('user_prefs', JSON.stringify(this.data.preferences));
   },
 
   getPreference(key) {
-    const stored = localStorage.getItem(`pref_${key}`);
-    return stored ? JSON.parse(stored) : this.data.preferences[key];
+    return this.data.preferences[key];
   },
 
-  destroy() {
+  setTheme(theme) {
+    this.data.theme = theme;
+    localStorage.setItem('theme', theme);
+  },
+
+  getTheme() {
+    return this.data.theme;
+  },
+
+  clear() {
     this.data = {
       user: null,
-      permissions: [],
-      preferences: {}
+      preferences: {},
+      theme: 'light'
     };
+    localStorage.removeItem('user');
+    localStorage.removeItem('user_prefs');
+    localStorage.removeItem('theme');
   }
 };
