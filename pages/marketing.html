@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketing - ManosTech Platform</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <div class="logo">ManosTech</div>
+      <ul class="menu">
+        <li><a href="#/dashboard">Dashboard</a></li>
+        <li><a href="#/eventos">Eventos</a></li>
+        <li><a href="#/lojas">Lojas</a></li>
+        <li><a href="#/visitantes">Visitantes</a></li>
+        <li><a href="#/marketing" class="active">Marketing</a></li>
+        <li><a href="#/funcionarios">Funcionários</a></li>
+        <li><a href="#/financeiro">Financeiro</a></li>
+        <li><a href="#/relatorios">Relatórios</a></li>
+        <li><a href="#/configuracoes">Configurações</a></li>
+      </ul>
+    </nav>
+    <main class="content">
+      <header class="top-bar">
+        <h2>Marketing - Campanhas</h2>
+        <button id="novaCampanhaBtn" class="btn btn-primary">+ Nova Campanha</button>
+      </header>
+      <div class="table-container">
+        <table id="campanhasTable">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Data Início</th>
+              <th>Data Fim</th>
+              <th>Loja</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="campanhasBody">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="../js/pages/marketing.js"></script>
+</body>
+</html>
