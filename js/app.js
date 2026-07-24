@@ -53,7 +53,8 @@ let currentModule = 'dashboard';
 
 /* ── Init Dashboard ──────────────────────────────────────────── */
 function initDashboard() {
-  const initials = currentUser.name.split(' ').map(w => w[0]).slice(0,2).join('');
+  const initials = (currentUser.name || '?')
+    .split(' ').filter(w => w.length > 0).map(w => w[0]).slice(0,2).join('');
   document.getElementById('userAvatar').textContent   = initials;
   document.getElementById('sidebarUserName').textContent = currentUser.name;
   document.getElementById('sidebarUserRole').textContent = currentUser.role;
@@ -240,7 +241,7 @@ function renderConfiguracoes() {
 
 function renderPerfil() {
   const u=currentUser||{};
-  const i=(u.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('');
+  const i=(u.name||'?').split(' ').filter(w=>w.length>0).map(w=>w[0]).slice(0,2).join('');
   return `<div class="page-header"><div class="page-title">🙋 Perfil</div><div class="page-subtitle">Suas informações</div></div><div class="grid-2"><div class="card" style="text-align:center"><div class="user-avatar" style="width:80px;height:80px;font-size:30px;margin:0 auto 16px">${i}</div><div style="font-size:20px;font-weight:700">${u.name||'-'}</div><div style="font-size:14px;color:var(--text-muted);margin:4px 0 12px">${u.email||'-'}</div><span class="badge badge-blue">${u.role||'-'}</span></div><div class="card"><div class="card-header"><div class="card-title">✏️ Editar</div></div><div class="form-group"><label class="form-label">Nome</label><input class="form-control" value="${u.name||''}"></div><div class="form-group"><label class="form-label">Email</label><input class="form-control" value="${u.email||''}" readonly style="opacity:.6"></div><div class="form-group"><label class="form-label">Nova Senha</label><input class="form-control" type="password" placeholder="••••••••"></div><button class="btn btn-primary" onclick="toast('Perfil atualizado!','success')">💾 Salvar</button></div></div>`;
 }
 

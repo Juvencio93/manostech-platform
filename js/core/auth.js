@@ -100,8 +100,8 @@ const auth = {
    * @param {string} [role] – defaults to the logged-in user's role
    */
   getAllowedModules(role) {
-    const r = role || this.getUser()?.role;
-    return ROLE_PERMISSIONS[r] || ROLE_PERMISSIONS['visualizador'];
+    const userRole = role || this.getUser()?.role;
+    return ROLE_PERMISSIONS[userRole] || ROLE_PERMISSIONS['visualizador'];
   },
 
   /**

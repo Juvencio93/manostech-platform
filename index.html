@@ -343,7 +343,9 @@ function showDashboard() {
   document.getElementById('dashboardScreen').classList.remove('hidden');
 
   // User info in sidebar
-  const initials = currentUser.name.split(' ').map(w => w[0]).slice(0,2).join('');
+  const initials = currentUser.name
+    ? currentUser.name.split(' ').filter(w => w.length > 0).map(w => w[0]).slice(0,2).join('')
+    : '?';
   document.getElementById('userAvatar').textContent = initials;
   document.getElementById('sidebarUserName').textContent = currentUser.name;
   document.getElementById('sidebarUserRole').textContent = currentUser.role;
@@ -759,7 +761,7 @@ function renderUsuarios() {
       <td>
         <div style="display:flex;align-items:center;gap:10px">
           <div class="user-avatar" style="width:32px;height:32px;font-size:13px">
-            ${u.nome.split(' ').map(w=>w[0]).slice(0,2).join('')}
+            ${(u.nome||'?').split(' ').filter(w=>w.length>0).map(w=>w[0]).slice(0,2).join('')}
           </div>
           <strong>${u.nome}</strong>
         </div>
@@ -840,7 +842,7 @@ function renderFuncionarios() {
       <td>
         <div style="display:flex;align-items:center;gap:10px">
           <div class="user-avatar" style="width:32px;height:32px;font-size:13px">
-            ${f.nome.split(' ').map(w=>w[0]).slice(0,2).join('')}
+            ${(f.nome||'?').split(' ').filter(w=>w.length>0).map(w=>w[0]).slice(0,2).join('')}
           </div>
           <strong>${f.nome}</strong>
         </div>
@@ -954,7 +956,7 @@ function toggle(label, checked) {
 /* ─── PERFIL ────────────────────────────────────────────────── */
 function renderPerfil() {
   const user = currentUser || {};
-  const initials = (user.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('');
+  const initials = (user.name||'?').split(' ').filter(w=>w.length>0).map(w=>w[0]).slice(0,2).join('');
   return `
   <div class="page-header">
     <div class="page-title">🙋 Meu Perfil</div>

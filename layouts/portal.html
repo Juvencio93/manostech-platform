@@ -159,9 +159,11 @@ const COUNTRIES = [
 ];
 
 const SPONSORS = ['🏆 TechCorp','💡 Inova+','🚀 StartupHub','🌐 CloudNet','💼 BizPro','🎯 TargetMkt'];
+const SESSION_DURATION_SECONDS = 3600; // 60 minutes
+const SPONSOR_ITEM_WIDTH = 120; // pixels per sponsor card (including gap)
 
 let selectedCountry = { flag:'🇧🇷', name:'Brasil' };
-let countdown = 60 * 60; // 60 min
+let countdown = SESSION_DURATION_SECONDS;
 let timer = null;
 
 /* ── Init ────────────────────────────────────────────────────── */
@@ -221,7 +223,7 @@ function buildSponsors() {
   // Auto-scroll
   let offset = 0;
   setInterval(() => {
-    offset = (offset + 1) % (SPONSORS.length * 120);
+    offset = (offset + 1) % (SPONSORS.length * SPONSOR_ITEM_WIDTH);
     document.querySelectorAll('.sponsors-track').forEach(t => {
       t.style.transform = `translateX(-${offset}px)`;
     });
@@ -273,7 +275,7 @@ function handleConnect(e) {
 
 /* ── Countdown ───────────────────────────────────────────────── */
 function startCountdown() {
-  countdown = 60 * 60;
+  countdown = SESSION_DURATION_SECONDS;
   updateCountdown();
   timer = setInterval(() => {
     countdown--;
