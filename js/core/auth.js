@@ -12,10 +12,17 @@ class Auth {
         this.session = null;
         this.user = null;
 
+        supabase.auth.onAuthStateChange((event, session) => {
+
+            this.session = session;
+            this.user = session?.user ?? null;
+
+        });
+
     }
 
     // ==================================================
-    // Inicialização
+    // Inicializa a autenticação
     // ==================================================
 
     async initialize() {
@@ -32,7 +39,7 @@ class Auth {
         this.session = data.session;
         this.user = data.session?.user ?? null;
 
-        return !!this.user;
+        return this.isAuthenticated();
 
     }
 
@@ -103,7 +110,7 @@ class Auth {
     }
 
     // ==================================================
-    // Sessão
+    // Sessão atual
     // ==================================================
 
     getSession() {
@@ -113,7 +120,7 @@ class Auth {
     }
 
     // ==================================================
-    // Usuário
+    // Usuário autenticado
     // ==================================================
 
     getUser() {
@@ -133,7 +140,7 @@ class Auth {
     }
 
     // ==================================================
-    // Atualiza sessão
+    // Atualiza a sessão
     // ==================================================
 
     async refresh() {
@@ -155,4 +162,6 @@ class Auth {
 
 }
 
-export default new Auth();
+const auth = new Auth();
+
+export default auth;
