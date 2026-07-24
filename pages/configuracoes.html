@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações - ManosTech Platform</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <div class="logo">ManosTech</div>
+      <ul class="menu">
+        <li><a href="#/dashboard">Dashboard</a></li>
+        <li><a href="#/eventos">Eventos</a></li>
+        <li><a href="#/lojas">Lojas</a></li>
+        <li><a href="#/visitantes">Visitantes</a></li>
+        <li><a href="#/marketing">Marketing</a></li>
+        <li><a href="#/funcionarios">Funcionários</a></li>
+        <li><a href="#/financeiro">Financeiro</a></li>
+        <li><a href="#/relatorios">Relatórios</a></li>
+        <li><a href="#/configuracoes" class="active">Configurações</a></li>
+      </ul>
+    </nav>
+    <main class="content">
+      <header class="top-bar">
+        <h2>Configurações</h2>
+      </header>
+      <div class="settings-container">
+        <div class="settings-section">
+          <h3>Perfil do Usuário</h3>
+          <form id="perfilForm">
+            <div class="form-group">
+              <label for="nomeUsuario">Nome:</label>
+              <input type="text" id="nomeUsuario" name="nomeUsuario">
+            </div>
+            <div class="form-group">
+              <label for="emailUsuario">Email:</label>
+              <input type="email" id="emailUsuario" name="emailUsuario">
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </form>
+        </div>
+        
+        <div class="settings-section">
+          <h3>Segurança</h3>
+          <form id="senhaForm">
+            <div class="form-group">
+              <label for="senhaAtual">Senha Atual:</label>
+              <input type="password" id="senhaAtual" name="senhaAtual">
+            </div>
+            <div class="form-group">
+              <label for="senhaNova">Nova Senha:</label>
+              <input type="password" id="senhaNova" name="senhaNova">
+            </div>
+            <div class="form-group">
+              <label for="senhaConfirm">Confirmar Senha:</label>
+              <input type="password" id="senhaConfirm" name="senhaConfirm">
+            </div>
+            <button type="submit" class="btn btn-primary">Alterar Senha</button>
+          </form>
+        </div>
+        
+        <div class="settings-section">
+          <h3>Preferências</h3>
+          <form id="preferencesForm">
+            <div class="form-group">
+              <label for="tema">Tema:</label>
+              <select id="tema" name="tema">
+                <option value="claro">Claro</option>
+                <option value="escuro">Escuro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="idioma">Idioma:</label>
+              <select id="idioma" name="idioma">
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="en-US">English (USA)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar Preferências</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="../js/pages/configuracoes.js"></script>
+</body>
+</html>
