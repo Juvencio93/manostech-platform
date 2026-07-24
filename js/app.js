@@ -1,37 +1,9 @@
-import { router } from './core/router.js';
-import { auth } from './core/auth.js';
-import { session } from './core/session.js';
+import Auth from "./core/auth.js";
 
-async function initializeApp() {
-  try {
-    // Verificar se usuário está autenticado
-    const isAuthenticated = await auth.checkAuth();
-    
-    if (!isAuthenticated) {
-      // Redirecionar para login
-      window.location.href = '#/login';
-      return;
-    }
+const logged = await Auth.initialize();
 
-    // Inicializar sessão
-    await session.initialize();
+if (!logged) {
 
-    // Inicializar roteador
-    router.initialize();
+    window.location.href = "/pages/login.html";
 
-    // Navegar para dashboard por padrão
-    if (window.location.hash === '') {
-      window.location.hash = '#/dashboard';
-    }
-  } catch (error) {
-    console.error('Erro ao inicializar aplicação:', error);
-    window.location.href = '#/login';
-  }
-}
-
-// Iniciar aplicação quando DOM estiver pronto
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp);
-} else {
-  initializeApp();
 }
