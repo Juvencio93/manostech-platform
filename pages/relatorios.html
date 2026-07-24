@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatórios - ManosTech Platform</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <div class="logo">ManosTech</div>
+      <ul class="menu">
+        <li><a href="#/dashboard">Dashboard</a></li>
+        <li><a href="#/eventos">Eventos</a></li>
+        <li><a href="#/lojas">Lojas</a></li>
+        <li><a href="#/visitantes">Visitantes</a></li>
+        <li><a href="#/marketing">Marketing</a></li>
+        <li><a href="#/funcionarios">Funcionários</a></li>
+        <li><a href="#/financeiro">Financeiro</a></li>
+        <li><a href="#/relatorios" class="active">Relatórios</a></li>
+        <li><a href="#/configuracoes">Configurações</a></li>
+      </ul>
+    </nav>
+    <main class="content">
+      <header class="top-bar">
+        <h2>Relatórios</h2>
+        <button id="gerarRelatorioBtn" class="btn btn-primary">+ Gerar Relatório</button>
+      </header>
+      <div class="filter-section">
+        <div class="filter-group">
+          <label for="lojaFilter">Loja:</label>
+          <select id="lojaFilter">
+            <option value="">Todas as lojas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="dataInicio">Data Início:</label>
+          <input type="date" id="dataInicio">
+        </div>
+        <div class="filter-group">
+          <label for="dataFim">Data Fim:</label>
+          <input type="date" id="dataFim">
+        </div>
+        <button id="filtrarBtn" class="btn btn-secondary">Filtrar</button>
+      </div>
+      <div class="table-container">
+        <table id="relatoriosTable">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Tipo</th>
+              <th>Data Geração</th>
+              <th>Loja</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="relatoriosBody">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="../js/pages/relatorios.js"></script>
+</body>
+</html>
