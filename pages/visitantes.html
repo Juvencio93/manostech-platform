@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitantes - ManosTech Platform</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <nav class="sidebar">
+      <div class="logo">ManosTech</div>
+      <ul class="menu">
+        <li><a href="#/dashboard">Dashboard</a></li>
+        <li><a href="#/eventos">Eventos</a></li>
+        <li><a href="#/lojas">Lojas</a></li>
+        <li><a href="#/visitantes" class="active">Visitantes</a></li>
+        <li><a href="#/marketing">Marketing</a></li>
+        <li><a href="#/funcionarios">Funcionários</a></li>
+        <li><a href="#/financeiro">Financeiro</a></li>
+        <li><a href="#/relatorios">Relatórios</a></li>
+        <li><a href="#/configuracoes">Configurações</a></li>
+      </ul>
+    </nav>
+    <main class="content">
+      <header class="top-bar">
+        <h2>Visitantes</h2>
+        <button id="novoVisitanteBtn" class="btn btn-primary">+ Novo Visitante</button>
+      </header>
+      <div class="table-container">
+        <table id="visitantesTable">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Data Visita</th>
+              <th>Loja</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="visitantesBody">
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="../js/pages/visitantes.js"></script>
+</body>
+</html>
