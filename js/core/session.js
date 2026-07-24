@@ -1,5 +1,5 @@
 // Gerenciamento de sessão com Supabase
-import { supabase } from './supabase-client.js';
+import { supabaseAuth } from './supabase-client.js';
 
 export const session = {
   data: {
@@ -10,9 +10,8 @@ export const session = {
 
   async initialize() {
     try {
-      // Obter sessão atual
-      const { data: { session: supabaseSession } } = await supabase.auth.getSession();
-      
+      const supabaseSession = await supabaseAuth.getSession();
+
       if (supabaseSession?.user) {
         this.data.user = supabaseSession.user;
         console.log('✅ Sessão restaurada:', this.data.user.email);

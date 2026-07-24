@@ -1,10 +1,13 @@
 // Roteador SPA com suporte a modules
+import { auth } from './auth.js';
 import dashboardModule from '../modules/dashboard/index.js';
 import eventosModule from '../modules/eventos/index.js';
 import empresasModule from '../modules/empresas/index.js';
 import unidadesModule from '../modules/unidades/index.js';
 import usuariosModule from '../modules/usuarios/index.js';
 import funcionariosModule from '../modules/funcionarios/index.js';
+import visitantesModule from '../modules/visitantes/index.js';
+import campanhasModule from '../modules/campanhas/index.js';
 import relatoriosModule from '../modules/relatorios/index.js';
 import financeiroModule from '../modules/financeiro/index.js';
 import configuracoesModule from '../modules/configuracoes/index.js';
@@ -56,13 +59,13 @@ const routes = {
   },
   '/visitantes': {
     layout: 'dashboard',
-    module: 'marketing-local',
+    module: 'visitantes',
     title: 'Visitantes',
     requireAuth: true
   },
   '/campanhas': {
     layout: 'dashboard',
-    module: 'marketing-local',
+    module: 'campanhas',
     title: 'Campanhas',
     requireAuth: true
   },
@@ -111,6 +114,8 @@ const modules = {
   'unidades': unidadesModule,
   'usuarios': usuariosModule,
   'funcionarios': funcionariosModule,
+  'visitantes': visitantesModule,
+  'campanhas': campanhasModule,
   'relatorios': relatoriosModule,
   'financeiro': financeiroModule,
   'configuracoes': configuracoesModule,
@@ -119,12 +124,33 @@ const modules = {
 };
 
 export const router = {
+  currentLayout: null,
+
   async loadLayout(layoutName) {
+    // Only reload the layout if it changed (avoids duplicate event listeners)
+    if (this.currentLayout === layoutName) {
+      return;
+    }
     try {
       const response = await fetch(`./layouts/${layoutName}.html`);
       if (!response.ok) throw new Error(`Layout ${layoutName} não encontrado`);
       const html = await response.text();
-      document.getElementById('app').innerHTML = html;
+      const appEl = document.getElementById('app');
+      appEl.innerHTML = html;
+
+      // Re-execute scripts injected via innerHTML (browser skips them by default)
+      for (const oldScript of appEl.querySelectorAll('script')) {
+        const newScript = document.createElement('script');
+        newScript.type = oldScript.type || 'text/javascript';
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      }
+
+      this.currentLayout = layoutName;
       console.log(`✅ Layout ${layoutName} carregado`);
     } catch (error) {
       console.error('Erro ao carregar layout:', error);
@@ -164,6 +190,18 @@ export const router = {
       console.log(`📍 Navegando para: ${path}`);
       
       const route = routes[path] || routes['/login'];
+
+      // Verificar autenticação para rotas protegidas
+      if (route.requireAuth && !auth.checkAuth()) {
+        window.location.hash = '#/login';
+        return;
+      }
+
+      // Redirecionar usuário autenticado que tenta acessar login
+      if (path === '/login' && auth.checkAuth()) {
+        window.location.hash = '#/dashboard';
+        return;
+      }
       
       // Carregar layout
       await this.loadLayout(route.layout);
