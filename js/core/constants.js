@@ -1,54 +1,77 @@
-export const constants = {
-  // Roles
-  ROLES: {
-    ADMIN: 'admin',
-    MANAGER: 'manager',
-    USER: 'user'
-  },
+// ======================================================
+// Manos Tech Platform
+// Constantes Globais
+// ======================================================
 
-  // Status
-  STATUS: {
-    ATIVO: 'ativo',
-    INATIVO: 'inativo',
-    PENDENTE: 'pendente',
-    CANCELADO: 'cancelado'
-  },
+export const APP_CONFIG = {
+    APP_NAME: "Manos Tech",
+    APP_SLOGAN: "Plataforma de Marketing Inteligente via Wi-Fi",
+    VERSION: "1.0.0",
 
-  // Tipos de eventos
-  TIPOS_EVENTO: {
-    EVENTO: 'evento',
-    PROMOCAO: 'promocao',
-    WORKSHOP: 'workshop'
-  },
+    // Supabase
+    SUPABASE_URL: "",
+    SUPABASE_ANON_KEY: "",
 
-  // Tipos de campanhas
-  TIPOS_CAMPANHA: {
-    PROMOCAO: 'promocao',
-    DESCONTO: 'desconto',
-    FIDELIZACAO: 'fidelizacao'
-  },
+    // Localização
+    DEFAULT_LANGUAGE: "pt-BR",
+    DEFAULT_TIMEZONE: "America/Sao_Paulo"
+};
 
-  // Tipos de unidades
-  TIPOS_UNIDADE: {
-    LOJA: 'loja',
-    RESTAURANTE: 'restaurante',
-    CAFETERIA: 'cafeteria',
-    ACADEMIA: 'academia',
-    FARMACIA: 'farmacia'
-  },
+// ======================================================
+// Rotas
+// ======================================================
 
-  // Formatos de relatório
-  FORMATOS_RELATORIO: {
-    PDF: 'pdf',
-    XLSX: 'xlsx',
-    CSV: 'csv'
-  },
+export const ROUTES = {
+    LOGIN: "/pages/login.html",
+    DASHBOARD: "/pages/dashboard.html",
+    EVENTOS: "/pages/eventos.html",
+    MARKETING: "/pages/marketing.html",
+    VISITANTES: "/pages/visitantes.html",
+    RELATORIOS: "/pages/relatorios.html",
+    CONFIGURACOES: "/pages/configuracoes.html"
+};
 
-  // Mensagens
-  MESSAGES: {
-    SUCCESS: 'Operação realizada com sucesso',
-    ERROR: 'Erro ao realizar operação',
-    CONFIRM: 'Tem certeza que deseja continuar?',
-    LOADING: 'Carregando...'
-  }
+// ======================================================
+// Perfis de Usuário
+// ======================================================
+
+export const ROLES = {
+    ADMIN: "admin",
+    GERENTE: "gerente",
+    FUNCIONARIO: "funcionario",
+    CLIENTE: "cliente"
+};
+
+// ======================================================
+// Status
+// ======================================================
+
+export const STATUS = {
+    ATIVO: "ativo",
+    INATIVO: "inativo",
+    PENDENTE: "pendente",
+    CANCELADO: "cancelado"
+};
+
+// ======================================================
+// Buckets do Storage
+// ======================================================
+
+export const STORAGE_BUCKETS = {
+    LOGOS: "logos",
+    BANNERS: "banners",
+    CAMPANHAS: "campanhas",
+    EXPORTS: "exports",
+    RELATORIOS: "relatorios"
+};
+
+// ======================================================
+// Chaves de Cache
+// ======================================================
+
+export const CACHE_KEYS = {
+    PROFILE: "mt_profile",
+    COMPANY: "mt_company",
+    UNIT: "mt_unit",
+    PERMISSIONS: "mt_permissions"
 };
