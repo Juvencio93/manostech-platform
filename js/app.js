@@ -4,32 +4,25 @@ import { session } from './core/session.js';
 
 async function initializeApp() {
   try {
-    // Verificar se usuário está autenticado
-    const isAuthenticated = await auth.checkAuth();
-    
+    const isAuthenticated = auth.checkAuth();
+
     if (!isAuthenticated) {
-      // Redirecionar para login
-      window.location.href = '#/login';
-      return;
+      window.location.hash = '#/login';
+    } else {
+      await session.initialize();
+      if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+        window.location.hash = '#/dashboard';
+      }
     }
 
-    // Inicializar sessão
-    await session.initialize();
-
-    // Inicializar roteador
     router.initialize();
-
-    // Navegar para dashboard por padrão
-    if (window.location.hash === '') {
-      window.location.hash = '#/dashboard';
-    }
   } catch (error) {
     console.error('Erro ao inicializar aplicação:', error);
-    window.location.href = '#/login';
+    window.location.hash = '#/login';
+    router.initialize();
   }
 }
 
-// Iniciar aplicação quando DOM estiver pronto
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {

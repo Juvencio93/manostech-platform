@@ -21,6 +21,7 @@
         <li><a href="#/empresas" class="nav-link">🏢 Empresas</a></li>
         <li><a href="#/unidades" class="nav-link">🏬 Unidades</a></li>
         <li><a href="#/usuarios" class="nav-link">👥 Usuários</a></li>
+        <li><a href="#/funcionarios" class="nav-link">👔 Funcionários</a></li>
         <li><a href="#/visitantes" class="nav-link">👁️ Visitantes</a></li>
         <li><a href="#/campanhas" class="nav-link">📢 Campanhas</a></li>
         <li><a href="#/relatorios" class="nav-link">📈 Relatórios</a></li>
@@ -57,8 +58,8 @@
     window.location.hash = '#/login';
   });
 
-  // Highlight active link
-  window.addEventListener('hashchange', () => {
+  // Destacar link ativo na sidebar
+  function highlightActiveLink() {
     const currentPath = window.location.hash.slice(1) || '/dashboard';
     document.querySelectorAll('.nav-link').forEach(link => {
       link.classList.remove('active');
@@ -66,8 +67,11 @@
         link.classList.add('active');
       }
     });
-  });
+  }
 
-  // Trigger on page load
-  window.dispatchEvent(new Event('hashchange'));
+  // Ouvir mudanças de hash para atualizar sidebar (apenas highlight, sem navegar)
+  window.addEventListener('hashchange', highlightActiveLink);
+
+  // Executar imediatamente para marcar o link atual
+  highlightActiveLink();
 </script>
