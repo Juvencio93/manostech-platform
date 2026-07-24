@@ -1,77 +1,158 @@
-import { supabase, supabaseAuth } from './supabase-client.js';
+// ======================================================
+// Manos Tech Platform
+// Authentication
+// ======================================================
 
-export const auth = {
-  async login(email, password) {
-    try {
-      const result = await supabaseAuth.signIn(email, password);
-      
-      if (result.success) {
-        console.log('✅ Login realizado com sucesso');
+import { supabase } from "./supabase-client.js";
+
+class Auth {
+
+    constructor() {
+
+        this.session = null;
+        this.user = null;
+
+    }
+
+    // ==================================================
+    // Inicialização
+    // ==================================================
+
+    async initialize() {
+
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+
+            console.error(error);
+            return false;
+
+        }
+
+        this.session = data.session;
+        this.user = data.session?.user ?? null;
+
+        return !!this.user;
+
+    }
+
+    // ==================================================
+    // Login
+    // ==================================================
+
+    async login(email, password) {
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+
+            email,
+            password
+
+        });
+
+        if (error) {
+
+            return {
+
+                success: false,
+                error
+
+            };
+
+        }
+
+        this.session = data.session;
+        this.user = data.user;
+
         return {
-          success: true,
-          user: result.data.user,
-          token: result.data.session.access_token
+
+            success: true,
+            user: data.user
+
         };
-      } else {
-        console.error('❌ Erro ao fazer login:', result.error);
-        return { success: false, message: result.error };
-      }
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      return { success: false, message: error.message };
+
     }
-  },
 
-  async logout() {
-    try {
-      const result = await supabaseAuth.signOut();
-      if (result.success) {
-        console.log('✅ Logout realizado');
-      }
-      return result;
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
-      return { success: false, message: error.message };
+    // ==================================================
+    // Logout
+    // ==================================================
+
+    async logout() {
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+
+            return {
+
+                success: false,
+                error
+
+            };
+
+        }
+
+        this.session = null;
+        this.user = null;
+
+        return {
+
+            success: true
+
+        };
+
     }
-  },
 
-  checkAuth() {
-    const token = localStorage.getItem('supabase_token');
-    const user = localStorage.getItem('user');
-    return !!(token && user);
-  },
+    // ==================================================
+    // Sessão
+    // ==================================================
 
-  getUser() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (e) {
-        console.error('Erro ao parsear usuário:', e);
-        return null;
-      }
+    getSession() {
+
+        return this.session;
+
     }
-    return null;
-  },
 
-  getToken() {
-    return localStorage.getItem('supabase_token');
-  },
+    // ==================================================
+    // Usuário
+    // ==================================================
 
-  async register(email, password, userData = {}) {
-    try {
-      const result = await supabaseAuth.signUp(email, password);
-      
-      if (result.success) {
-        console.log('✅ Registro realizado');
-        return { success: true, user: result.data.user };
-      } else {
-        console.error('❌ Erro ao registrar:', result.error);
-        return { success: false, message: result.error };
-      }
-    } catch (error) {
-      console.error('Erro ao registrar:', error);
-      return { success: false, message: error.message };
+    getUser() {
+
+        return this.user;
+
     }
-  }
-};
+
+    // ==================================================
+    // Está autenticado?
+    // ==================================================
+
+    isAuthenticated() {
+
+        return this.user !== null;
+
+    }
+
+    // ==================================================
+    // Atualiza sessão
+    // ==================================================
+
+    async refresh() {
+
+        const { data, error } = await supabase.auth.refreshSession();
+
+        if (error) {
+
+            return false;
+
+        }
+
+        this.session = data.session;
+        this.user = data.user;
+
+        return true;
+
+    }
+
+}
+
+export default new Auth();
