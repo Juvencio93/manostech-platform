@@ -1,31 +1,331 @@
-<div class="portal-container">
-  <nav class="navbar" style="position: relative; margin: 0 -16px 16px -16px;">
-    <div class="navbar-brand">📱 ManosTech Portal</div>
-    <div class="navbar-menu">
-      <button class="btn btn-primary" onclick="window.location.hash = '#/login'">Login</button>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManosTech – Wi-Fi Portal</title>
+  <link rel="stylesheet" href="../assets/css/portal.css">
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="portal-bg">
+
+  <!-- ── FORM SCREEN ─────────────────────────────────────────── -->
+  <div class="portal-card" id="portalForm">
+
+    <div class="portal-header">
+      <div class="portal-logo">📡</div>
+      <h1>Wi-Fi Gratuito</h1>
+      <p>Conecte-se à internet gratuitamente preenchendo o formulário abaixo.</p>
+      <div class="wifi-badge">✅ Conexão Segura</div>
     </div>
-  </nav>
 
-  <div style="text-align: center; padding: 60px 20px;">
-    <h1>👋 Bem-vindo ao Portal ManosTech</h1>
-    <p style="font-size: 18px; color: var(--text-light); margin-bottom: 30px;">
-      Plataforma de Gerenciamento de Eventos e Marketing Local
-    </p>
+    <form class="portal-form" id="captiveForm" onsubmit="handleConnect(event)">
 
-    <div style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); color: white; padding: 40px; border-radius: 12px; margin: 30px 0;">
-      <h2 style="color: white; margin-bottom: 15px;">🚀 Funcionalidades</h2>
-      <ul style="list-style: none; padding: 0;">
-        <li style="padding: 10px;">✅ Gerenciamento de Eventos</li>
-        <li style="padding: 10px;">✅ Marketing Local Inteligente</li>
-        <li style="padding: 10px;">✅ Analytics em Tempo Real</li>
-        <li style="padding: 10px;">✅ Relatórios Completos</li>
-      </ul>
+      <div class="form-group">
+        <label class="form-label">Nome Completo *</label>
+        <input class="form-control" type="text" id="visitorName"
+               placeholder="Seu nome completo" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input class="form-control" type="email" id="visitorEmail"
+               placeholder="seu@email.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        <input class="form-control" type="tel" id="visitorPhone"
+               placeholder="(11) 99999-9999" autocomplete="tel">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">País</label>
+        <div class="country-selector">
+          <button type="button" class="country-btn" id="countryBtn" onclick="toggleCountry()">
+            <span id="countryFlag">🇧🇷</span>
+            <span id="countryName">Brasil</span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="country-dropdown" id="countryDropdown">
+            <div class="country-search">
+              <input type="text" placeholder="🔍 Buscar país..." id="countrySearch"
+                     oninput="filterCountries(this.value)">
+            </div>
+            <div class="country-list" id="countryList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lgpd-box">
+        <label class="lgpd-label">
+          <input type="checkbox" id="lgpdCheck" required>
+          <span class="lgpd-checkbox"></span>
+          <span>
+            Li e aceito os
+            <a class="lgpd-link" href="#" onclick="showLGPD()">Termos de Uso</a>
+            e autorizo o tratamento dos meus dados pessoais conforme a
+            <a class="lgpd-link" href="#" onclick="showLGPD()">LGPD (Lei 13.709/2018)</a>.
+            Meus dados serão utilizados apenas para acesso à rede Wi-Fi.
+          </span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-portal" id="connectBtn">
+        📡 Conectar ao Wi-Fi Grátis
+      </button>
+
+    </form>
+
+    <div class="sponsors-section">
+      <div class="sponsors-label">Patrocinadores</div>
+      <div class="sponsors-track" id="sponsorsTrack"></div>
     </div>
 
-    <div style="margin-top: 40px;">
-      <a href="#/login" class="btn btn-primary" style="padding: 15px 40px; font-size: 16px;">
-        🔐 Fazer Login
-      </a>
+  </div>
+
+  <!-- ── SUCCESS SCREEN ──────────────────────────────────────── -->
+  <div class="portal-card hidden" id="portalSuccess">
+    <div class="portal-success">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Conectado com sucesso!</div>
+      <div class="success-sub" id="successMsg">Você está conectado ao Wi-Fi gratuito.</div>
+      <div class="speed-badge">
+        🚀 Velocidade: <strong>50 Mbps</strong>
+      </div>
+      <div style="margin-top:24px">
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Sessão expira em:</div>
+        <div style="font-size:28px;font-weight:700;color:var(--accent-blue)" id="countdown">60:00</div>
+      </div>
+      <div style="margin-top:24px;font-size:12px;color:var(--text-muted)">
+        Para desconectar ou renovar sua sessão,<br>
+        <button style="background:none;border:none;color:var(--accent-blue);cursor:pointer;font-size:12px"
+                onclick="resetPortal()">clique aqui</button>.
+      </div>
+    </div>
+
+    <div class="sponsors-section">
+      <div class="sponsors-label">Agradecemos aos nossos patrocinadores</div>
+      <div class="sponsors-track" id="sponsorsTrack2"></div>
+    </div>
+  </div>
+
+  <div class="portal-footer">
+    Powered by <a href="https://github.com/Juvencio93/manostech-platform" target="_blank">ManosTech Platform</a>
+    &nbsp;|&nbsp; <a href="#" onclick="showLGPD()">Política de Privacidade</a>
+  </div>
+</div>
+
+<!-- LGPD Modal -->
+<div id="lgpdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#0c1020;border:1px solid rgba(255,255,255,.1);border-radius:20px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto">
+    <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center">
+      <strong>📜 Política de Privacidade – LGPD</strong>
+      <button onclick="hideLGPD()" style="background:none;border:none;color:#8a9cc8;font-size:20px;cursor:pointer">×</button>
+    </div>
+    <div style="padding:24px;font-size:13px;color:#8a9cc8;line-height:1.8">
+      <h3 style="color:#f0f4ff;margin-bottom:12px">1. Dados Coletados</h3>
+      <p>Coletamos: nome completo, email, telefone (opcional) e país de origem, exclusivamente para acesso ao serviço de Wi-Fi.</p>
+      <h3 style="color:#f0f4ff;margin:16px 0 12px">2. Finalidade</h3>
+      <p>Os dados são usados para: autenticação na rede, controle de acesso, envio de comunicações (se autorizado) e fins estatísticos anonimizados.</p>
+      <h3 style="color:#f0f4ff;margin:16px 0 12px">3. Base Legal</h3>
+      <p>Tratamento baseado no consentimento do titular (Art. 7, I da LGPD).</p>
+      <h3 style="color:#f0f4ff;margin:16px 0 12px">4. Seus Direitos</h3>
+      <p>Você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento pelo email: <strong style="color:#4da8da">privacidade@manostech.com.br</strong></p>
+      <h3 style="color:#f0f4ff;margin:16px 0 12px">5. Retenção</h3>
+      <p>Dados retidos por até 90 dias após a última conexão, salvo obrigação legal.</p>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid rgba(255,255,255,.1);text-align:right">
+      <button onclick="hideLGPD()" style="padding:10px 24px;background:#4da8da;color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer">Entendido</button>
     </div>
   </div>
 </div>
+
+<script>
+/* ── Countries List ──────────────────────────────────────────── */
+const COUNTRIES = [
+  {flag:'🇧🇷',name:'Brasil'},{flag:'🇦🇷',name:'Argentina'},{flag:'🇺🇸',name:'Estados Unidos'},
+  {flag:'🇵🇹',name:'Portugal'},{flag:'🇪🇸',name:'Espanha'},{flag:'🇲🇽',name:'México'},
+  {flag:'🇨🇴',name:'Colômbia'},{flag:'🇨🇱',name:'Chile'},{flag:'🇵🇪',name:'Peru'},
+  {flag:'🇺🇾',name:'Uruguai'},{flag:'🇵🇾',name:'Paraguai'},{flag:'🇧🇴',name:'Bolívia'},
+  {flag:'🇪🇨',name:'Equador'},{flag:'🇻🇪',name:'Venezuela'},{flag:'🇩🇪',name:'Alemanha'},
+  {flag:'🇫🇷',name:'França'},{flag:'🇮🇹',name:'Itália'},{flag:'🇬🇧',name:'Reino Unido'},
+  {flag:'🇯🇵',name:'Japão'},{flag:'🇨🇳',name:'China'},{flag:'🇮🇳',name:'Índia'},
+  {flag:'🇷🇺',name:'Rússia'},{flag:'🇨🇦',name:'Canadá'},{flag:'🇦🇺',name:'Austrália'},
+  {flag:'🇿🇦',name:'África do Sul'},{flag:'🇰🇷',name:'Coreia do Sul'},
+];
+
+const SPONSORS = ['🏆 TechCorp','💡 Inova+','🚀 StartupHub','🌐 CloudNet','💼 BizPro','🎯 TargetMkt'];
+
+let selectedCountry = { flag:'🇧🇷', name:'Brasil' };
+let countdown = 60 * 60; // 60 min
+let timer = null;
+
+/* ── Init ────────────────────────────────────────────────────── */
+function init() {
+  buildCountryList(COUNTRIES);
+  buildSponsors();
+}
+
+/* ── Country Selector ────────────────────────────────────────── */
+function toggleCountry() {
+  const dd = document.getElementById('countryDropdown');
+  const btn = document.getElementById('countryBtn');
+  dd.classList.toggle('open');
+  btn.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    document.getElementById('countrySearch').focus();
+  }
+}
+
+function filterCountries(q) {
+  const filtered = COUNTRIES.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
+  buildCountryList(filtered);
+}
+
+function buildCountryList(list) {
+  const el = document.getElementById('countryList');
+  el.innerHTML = list.map(c => `
+    <div class="country-option" onclick="selectCountry('${c.flag}','${c.name}')">
+      <span class="country-flag">${c.flag}</span>
+      <span>${c.name}</span>
+    </div>`).join('');
+}
+
+function selectCountry(flag, name) {
+  selectedCountry = { flag, name };
+  document.getElementById('countryFlag').textContent = flag;
+  document.getElementById('countryName').textContent = name;
+  document.getElementById('countryDropdown').classList.remove('open');
+  document.getElementById('countryBtn').classList.remove('open');
+}
+
+document.addEventListener('click', e => {
+  const sel = document.querySelector('.country-selector');
+  if (sel && !sel.contains(e.target)) {
+    document.getElementById('countryDropdown').classList.remove('open');
+    document.getElementById('countryBtn').classList.remove('open');
+  }
+});
+
+/* ── Sponsors Carousel ───────────────────────────────────────── */
+function buildSponsors() {
+  const doubled = [...SPONSORS, ...SPONSORS];
+  ['sponsorsTrack','sponsorsTrack2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = doubled.map(s => `<div class="sponsor-item">${s}</div>`).join('');
+  });
+  // Auto-scroll
+  let offset = 0;
+  setInterval(() => {
+    offset = (offset + 1) % (SPONSORS.length * 120);
+    document.querySelectorAll('.sponsors-track').forEach(t => {
+      t.style.transform = `translateX(-${offset}px)`;
+    });
+  }, 30);
+}
+
+/* ── Form Submit ─────────────────────────────────────────────── */
+function handleConnect(e) {
+  e.preventDefault();
+
+  const name  = document.getElementById('visitorName').value.trim();
+  const email = document.getElementById('visitorEmail').value.trim();
+  const lgpd  = document.getElementById('lgpdCheck').checked;
+  const btn   = document.getElementById('connectBtn');
+
+  if (!lgpd) {
+    toast('Você deve aceitar os termos LGPD para continuar.', 'error');
+    return;
+  }
+
+  // Loading
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Conectando...';
+
+  setTimeout(() => {
+    // Save to localStorage (real: would send to Supabase)
+    const visitor = {
+      name, email,
+      phone: document.getElementById('visitorPhone').value,
+      country: selectedCountry.name,
+      countryFlag: selectedCountry.flag,
+      lgpd: true,
+      connectedAt: new Date().toISOString()
+    };
+    const visitors = JSON.parse(localStorage.getItem('mt_visitors') || '[]');
+    visitors.push(visitor);
+    localStorage.setItem('mt_visitors', JSON.stringify(visitors));
+
+    // Show success
+    document.getElementById('successMsg').textContent =
+      `Olá ${name}! Você está conectado ao Wi-Fi gratuito. Aproveite!`;
+    document.getElementById('portalForm').classList.add('hidden');
+    document.getElementById('portalSuccess').classList.remove('hidden');
+
+    startCountdown();
+    toast('Conectado com sucesso! Aproveite o Wi-Fi! 🎉', 'success');
+  }, 1500);
+}
+
+/* ── Countdown ───────────────────────────────────────────────── */
+function startCountdown() {
+  countdown = 60 * 60;
+  updateCountdown();
+  timer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      clearInterval(timer);
+      toast('Sua sessão expirou. Conecte-se novamente.', 'warning');
+      resetPortal();
+    } else {
+      updateCountdown();
+    }
+  }, 1000);
+}
+
+function updateCountdown() {
+  const m = String(Math.floor(countdown / 60)).padStart(2,'0');
+  const s = String(countdown % 60).padStart(2,'0');
+  document.getElementById('countdown').textContent = `${m}:${s}`;
+}
+
+function resetPortal() {
+  clearInterval(timer);
+  document.getElementById('portalForm').classList.remove('hidden');
+  document.getElementById('portalSuccess').classList.add('hidden');
+  document.getElementById('captiveForm').reset();
+  document.getElementById('connectBtn').disabled = false;
+  document.getElementById('connectBtn').textContent = '📡 Conectar ao Wi-Fi Grátis';
+  selectCountry('🇧🇷','Brasil');
+}
+
+/* ── LGPD Modal ──────────────────────────────────────────────── */
+function showLGPD() {
+  const m = document.getElementById('lgpdModal');
+  m.style.display = 'flex';
+}
+function hideLGPD() {
+  document.getElementById('lgpdModal').style.display = 'none';
+}
+
+/* ── Toast ───────────────────────────────────────────────────── */
+function toast(message, type = 'info') {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = message;
+  c.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('removing');
+    setTimeout(() => el.remove(), 350);
+  }, 3500);
+}
+
+init();
+</script>
+</body>
+</html>

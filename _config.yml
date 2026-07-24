@@ -1,1 +1,10 @@
 site: manostech-platform
+exclude:
+  - server.js
+  - server.py
+  - start.sh
+  - start.bat
+  - src/
+  - supabase/
+  - package.json
+  - "*.md"

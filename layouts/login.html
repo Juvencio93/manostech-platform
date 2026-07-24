@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManosTech – Login</title>
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="login-bg">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-circle">🚀</div>
+      <h1>ManosTech Platform</h1>
+      <p>Acesse o painel administrativo</p>
+    </div>
+
+    <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-group">
+          <span class="input-icon">📧</span>
+          <input class="form-control" type="email" id="loginEmail"
+                 placeholder="seu@email.com" autocomplete="email" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input class="form-control" type="password" id="loginPassword"
+                 placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-login" id="loginBtn">
+        Entrar
+      </button>
+      <div class="login-hint">
+        💡 <strong>Credenciais demo:</strong><br>
+        admin@demo.com / admin123<br>
+        gerente@demo.com / gerente123
+      </div>
+    </form>
+
+    <div style="text-align:center;margin-top:20px">
+      <a href="../index.html" style="color:var(--text-muted);font-size:13px">← Voltar ao início</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEMO_USERS = {
+  'admin@demo.com':   { password:'admin123',   role:'admin',   name:'Admin Sistema' },
+  'gerente@demo.com': { password:'gerente123', role:'gerente', name:'Gerente Silva' },
+};
+
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass  = document.getElementById('loginPassword').value;
+  const btn   = document.getElementById('loginBtn');
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+
+  setTimeout(() => {
+    const demo = DEMO_USERS[email];
+    if (demo && demo.password === pass) {
+      localStorage.setItem('mt_user', JSON.stringify({ email, role: demo.role, name: demo.name }));
+      window.location.href = '../layouts/dashboard.html';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+      toast('Email ou senha incorretos.', 'error');
+    }
+  }, 700);
+}
+
+function toast(msg, type) {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="toast-icon">${type==='error'?'❌':'✅'}</span><div class="toast-content"><div class="toast-message">${msg}</div></div>`;
+  c.appendChild(el);
+  setTimeout(() => { el.classList.add('removing'); setTimeout(()=>el.remove(),350); }, 3500);
+}
+</script>
+</body>
+</html>

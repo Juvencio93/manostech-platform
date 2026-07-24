@@ -4,328 +4,1103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ManosTech Platform</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f9fafb;
-      color: #1f2937;
-    }
-
-    .auth-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-    }
-
-    .auth-form {
-      background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 20px 25px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .auth-form h2 {
-      margin-bottom: 30px;
-      text-align: center;
-      font-size: 24px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #1e40af;
-      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background: #1e40af;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #1e3a8a;
-    }
-
-    .dashboard-container {
-      display: flex;
-      height: 100vh;
-    }
-
-    .navbar {
-      background: white;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .navbar-brand {
-      font-size: 20px;
-      font-weight: bold;
-      color: #1e40af;
-    }
-
-    .sidebar {
-      width: 250px;
-      background: white;
-      border-right: 1px solid #e5e7eb;
-      overflow-y: auto;
-    }
-
-    .sidebar ul {
-      list-style: none;
-    }
-
-    .sidebar a {
-      display: block;
-      padding: 12px 16px;
-      color: #6b7280;
-      text-decoration: none;
-      cursor: pointer;
-      border-bottom: 1px solid #f3f4f6;
-    }
-
-    .sidebar a.active {
-      background: #f3f4f6;
-      color: #1e40af;
-      border-left: 4px solid #1e40af;
-      padding-left: 20px;
-    }
-
-    .content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main-content {
-      flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .stat-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-left: 4px solid #1e40af;
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 32px;
-      font-weight: bold;
-      color: #1e40af;
-      margin: 10px 0;
-    }
-
-    .logout-btn {
-      padding: 8px 16px;
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .logout-btn:hover {
-      background: #b91c1c;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
-  <div id="loginScreen" class="auth-container">
-    <div class="auth-form">
-      <h2>🔐 Login</h2>
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="seu@email.com" required>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════════════════════════════════ -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════════════════ -->
+<div id="loginScreen" class="login-bg">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-circle">🚀</div>
+      <h1>ManosTech Platform</h1>
+      <p>Plataforma de gestão inteligente</p>
+    </div>
+
+    <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-group">
+          <span class="input-icon">📧</span>
+          <input class="form-control" type="email" id="loginEmail"
+                 placeholder="seu@email.com" autocomplete="email" required>
         </div>
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input class="form-control" type="password" id="loginPassword"
+                 placeholder="••••••••" autocomplete="current-password" required>
         </div>
-        <button type="submit" class="btn">Entrar</button>
-        <p style="text-align: center; margin-top: 20px; font-size: 14px;">💡 Use qualquer email/senha</p>
-      </form>
+      </div>
+      <button type="submit" class="btn btn-primary btn-login" id="loginBtn">
+        <span id="loginBtnText">Entrar</span>
+      </button>
+      <div class="login-hint">
+        💡 <strong>Demo rápida:</strong><br>
+        admin@demo.com / admin123<br>
+        gerente@demo.com / gerente123
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DASHBOARD (hidden until login)
+══════════════════════════════════════════════════════════════ -->
+<div id="dashboardScreen" class="app-layout hidden">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🚀</div>
+      <div>
+        <div class="logo-text">ManosTech</div>
+        <div class="logo-sub">Platform v2.0</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <ul>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="dashboard">
+            <span class="nav-icon">📊</span> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="eventos">
+            <span class="nav-icon">🎉</span> Eventos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="empresas">
+            <span class="nav-icon">🏢</span> Empresas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="visitantes">
+            <span class="nav-icon">👥</span> Visitantes
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="campanhas">
+            <span class="nav-icon">📢</span> Campanhas
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-section-label">Gestão</div>
+      <ul>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="relatorios">
+            <span class="nav-icon">📈</span> Relatórios
+          </a>
+        </li>
+        <li class="nav-item nav-admin-only">
+          <a href="#" class="nav-link" data-module="financeiro">
+            <span class="nav-icon">💰</span> Financeiro
+          </a>
+        </li>
+        <li class="nav-item nav-admin-only">
+          <a href="#" class="nav-link" data-module="usuarios">
+            <span class="nav-icon">👤</span> Usuários
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="unidades">
+            <span class="nav-icon">🏬</span> Unidades
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="funcionarios">
+            <span class="nav-icon">👷</span> Funcionários
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-section-label">Configurar</div>
+      <ul>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="configuracoes">
+            <span class="nav-icon">⚙️</span> Configurações
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-module="perfil">
+            <span class="nav-icon">🙋</span> Perfil
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarUserName">Carregando...</div>
+          <div class="user-role" id="sidebarUserRole">-</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-subtitle" id="topbarSubtitle">Visão geral do sistema</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" title="Portal Captivo" onclick="openPortal()">🌐</button>
+      <button class="topbar-btn" title="Notificações">🔔</button>
+      <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Sair →</button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content" id="mainContent">
+    <div class="page-loading">
+      <div class="spinner"></div>
+      Carregando módulo...
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL GLOBAL
+══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="globalModal">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Título</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" id="modalConfirmBtn">Confirmar</button>
     </div>
   </div>
+</div>
 
-  <div id="dashboardScreen" class="hidden">
-    <div class="dashboard-container">
-      <aside class="sidebar">
-        <div style="padding: 20px; border-bottom: 1px solid #e5e7eb;"><strong style="color: #1e40af;">📊 ManosTech</strong></div>
-        <ul>
-          <li><a href="#" onclick="showPage('dashboard', event)" class="nav-link active">📊 Dashboard</a></li>
-          <li><a href="#" onclick="showPage('eventos', event)" class="nav-link">🎉 Eventos</a></li>
-          <li><a href="#" onclick="showPage('empresas', event)" class="nav-link">🏢 Empresas</a></li>
-          <li><a href="#" onclick="showPage('visitantes', event)" class="nav-link">👥 Visitantes</a></li>
-          <li><a href="#" onclick="showPage('campanhas', event)" class="nav-link">📢 Campanhas</a></li>
-          <li><a href="#" onclick="showPage('relatorios', event)" class="nav-link">📈 Relatórios</a></li>
-          <li><a href="#" onclick="showPage('configuracoes', event)" class="nav-link">⚙️ Configurações</a></li>
-        </ul>
-      </aside>
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════════════ -->
+<script>
+/* ================================================================
+   DEMO USERS (fallback without Supabase)
+================================================================ */
+const DEMO_USERS = {
+  'admin@demo.com':   { password:'admin123',   role:'admin',      name:'Admin Sistema' },
+  'gerente@demo.com': { password:'gerente123', role:'gerente',    name:'Gerente Silva' },
+  'operador@demo.com':{ password:'op123',      role:'operador',   name:'Operador João' },
+  'viewer@demo.com':  { password:'view123',    role:'visualizador',name:'Viewer Maria'  }
+};
 
-      <div class="content">
-        <div class="navbar">
-          <div class="navbar-brand">🚀 ManosTech Platform</div>
-          <div><span id="userEmail" style="margin-right: 20px;">Usuário</span><button class="logout-btn" onclick="handleLogout()">Sair</button></div>
-        </div>
+/* permissions per role */
+const ROLE_PERMISSIONS = {
+  admin:        ['dashboard','eventos','empresas','visitantes','campanhas','relatorios','financeiro','usuarios','unidades','funcionarios','configuracoes','perfil'],
+  gerente:      ['dashboard','eventos','empresas','visitantes','campanhas','relatorios','unidades','funcionarios','configuracoes','perfil'],
+  operador:     ['dashboard','eventos','visitantes','campanhas','perfil'],
+  visualizador: ['dashboard','relatorios','perfil']
+};
 
-        <div class="main-content">
-          <div id="page-dashboard" class="page-content">
-            <h1>📊 Dashboard</h1>
-            <div class="stats-grid">
-              <div class="stat-card"><div style="font-size: 12px; color: #6b7280;">Visitantes</div><div class="stat-value">1,234</div></div>
-              <div class="stat-card"><div style="font-size: 12px; color: #6b7280;">Eventos</div><div class="stat-value">8</div></div>
-              <div class="stat-card"><div style="font-size: 12px; color: #6b7280;">Campanhas</div><div class="stat-value">5</div></div>
-              <div class="stat-card"><div style="font-size: 12px; color: #6b7280;">Empresas</div><div class="stat-value">12</div></div>
-            </div>
-            <div class="card"><h3>📈 Performance</h3><p>✅ Visitantes: ↑ 32%</p><p>✅ Conversão: 12.5%</p><p>✅ Receita: R$ 45.230</p></div>
-          </div>
+/* ================================================================
+   MODULE DEFINITIONS
+================================================================ */
+const MODULES = {
+  dashboard:    { title:'Dashboard',      subtitle:'Visão geral do sistema',       icon:'📊' },
+  eventos:      { title:'Eventos',        subtitle:'Gestão de eventos',            icon:'🎉' },
+  empresas:     { title:'Empresas',       subtitle:'Gestão de empresas',           icon:'🏢' },
+  visitantes:   { title:'Visitantes',     subtitle:'Visitantes conectados',        icon:'👥' },
+  campanhas:    { title:'Campanhas',      subtitle:'Campanhas de marketing',       icon:'📢' },
+  relatorios:   { title:'Relatórios',     subtitle:'Analytics e relatórios',      icon:'📈' },
+  financeiro:   { title:'Financeiro',     subtitle:'Gestão financeira',           icon:'💰' },
+  usuarios:     { title:'Usuários',       subtitle:'Gerenciar usuários',          icon:'👤' },
+  unidades:     { title:'Unidades',       subtitle:'Estrutura de unidades',       icon:'🏬' },
+  funcionarios: { title:'Funcionários',   subtitle:'Gestão de funcionários',      icon:'👷' },
+  configuracoes:{ title:'Configurações',  subtitle:'Configurações do sistema',    icon:'⚙️' },
+  perfil:       { title:'Perfil',         subtitle:'Suas informações pessoais',   icon:'🙋' }
+};
 
-          <div id="page-eventos" class="page-content hidden">
-            <h1>🎉 Eventos</h1>
-            <div class="card"><h3>Próximos Eventos</h3><p>🎉 Lançamento Produto X - 25/07/2024</p><p>🎉 Black Friday - 29/11/2024</p></div>
-          </div>
+/* ================================================================
+   STATE
+================================================================ */
+let currentUser = null;
+let currentModule = 'dashboard';
 
-          <div id="page-empresas" class="page-content hidden">
-            <h1>🏢 Empresas</h1>
-            <div class="card"><h3>Empresa Demo</h3><p><strong>CNPJ:</strong> 12.345.678/0001-90</p><p><strong>Email:</strong> contato@demo.com</p><p><strong>Status:</strong> ✅ Ativo</p></div>
-          </div>
+/* ================================================================
+   TOAST NOTIFICATIONS
+================================================================ */
+function toast(message, type = 'info', title = '') {
+  const container = document.getElementById('toastContainer');
+  const icons = { success:'✅', error:'❌', warning:'⚠️', info:'ℹ️' };
+  const titles = { success:'Sucesso', error:'Erro', warning:'Atenção', info:'Info' };
 
-          <div id="page-visitantes" class="page-content hidden">
-            <h1>👥 Visitantes</h1>
-            <div class="card"><h3>Total: 1.234 Visitantes</h3><p>Últimos 30 dias: 234 novos</p></div>
-          </div>
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `
+    <span class="toast-icon">${icons[type] || icons.info}</span>
+    <div class="toast-content">
+      <div class="toast-title">${title || titles[type]}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-dismiss" onclick="this.parentElement.remove()">×</button>
+  `;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('removing');
+    setTimeout(() => el.remove(), 350);
+  }, 4000);
+}
 
-          <div id="page-campanhas" class="page-content hidden">
-            <h1>📢 Campanhas</h1>
-            <div class="card"><h3>Campanhas: 2 Ativas | 3 Planejadas</h3><p>Gerenciamento de campanhas de marketing</p></div>
-          </div>
+/* ================================================================
+   MODAL
+================================================================ */
+function openModal(title, body, confirmLabel = 'Confirmar', onConfirm = null) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modalConfirmBtn').textContent = confirmLabel;
+  document.getElementById('modalConfirmBtn').onclick = onConfirm || closeModal;
+  document.getElementById('globalModal').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('globalModal').classList.remove('active');
+}
+document.getElementById('globalModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 
-          <div id="page-relatorios" class="page-content hidden">
-            <h1>📈 Relatórios</h1>
-            <div class="card"><h3>Gerar Relatórios</h3><p>📊 Relatório de Visitantes</p><p>💰 Relatório Financeiro</p><p>📈 Análise de Campanhas</p></div>
-          </div>
+/* ================================================================
+   AUTH
+================================================================ */
+function handleLogin(e) {
+  e.preventDefault();
+  const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const btn      = document.getElementById('loginBtn');
+  const btnText  = document.getElementById('loginBtnText');
 
-          <div id="page-configuracoes" class="page-content hidden">
-            <h1>⚙️ Configurações</h1>
-            <div class="card"><h3>Preferências</h3><p>✅ Notificações por Email</p><p>✅ Tema Claro/Escuro</p><p>✅ Idioma: Português</p></div>
-          </div>
-        </div>
+  // Loading state
+  btn.disabled = true;
+  btnText.innerHTML = '<span style="display:inline-flex;gap:8px;align-items:center"><span class="spinner" style="width:16px;height:16px;border-color:rgba(0,0,0,.3);border-top-color:#000"></span> Entrando...</span>';
+
+  setTimeout(() => {
+    const demo = DEMO_USERS[email];
+    if (demo && demo.password === password) {
+      currentUser = { email, role: demo.role, name: demo.name };
+      localStorage.setItem('mt_user', JSON.stringify(currentUser));
+      showDashboard();
+      toast(`Bem-vindo, ${demo.name}!`, 'success');
+    } else {
+      btn.disabled = false;
+      btnText.textContent = 'Entrar';
+      toast('Email ou senha incorretos. Tente um dos usuários demo.', 'error');
+    }
+  }, 800);
+}
+
+function handleLogout() {
+  openModal('Sair do sistema', '<p style="color:var(--text-secondary)">Tem certeza que deseja sair?</p>',
+    'Sair', () => {
+      currentUser = null;
+      localStorage.removeItem('mt_user');
+      closeModal();
+      showLogin();
+      toast('Sessão encerrada.', 'info');
+    });
+}
+
+/* ================================================================
+   SCREENS
+================================================================ */
+function showLogin() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('dashboardScreen').classList.add('hidden');
+  document.getElementById('loginBtn').disabled = false;
+  document.getElementById('loginBtnText').textContent = 'Entrar';
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboardScreen').classList.remove('hidden');
+
+  // User info in sidebar
+  const initials = currentUser.name.split(' ').map(w => w[0]).slice(0,2).join('');
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('sidebarUserName').textContent = currentUser.name;
+  document.getElementById('sidebarUserRole').textContent = currentUser.role;
+
+  // Filter nav by permissions
+  const allowed = ROLE_PERMISSIONS[currentUser.role] || [];
+  document.querySelectorAll('.nav-link[data-module]').forEach(link => {
+    const mod = link.dataset.module;
+    const li  = link.closest('.nav-item');
+    li.style.display = allowed.includes(mod) ? '' : 'none';
+  });
+
+  // Load dashboard
+  loadModule('dashboard');
+}
+
+/* ================================================================
+   MODULE ROUTER
+================================================================ */
+function loadModule(module) {
+  const allowed = ROLE_PERMISSIONS[currentUser?.role] || [];
+  if (!allowed.includes(module)) {
+    toast('Sem permissão para acessar este módulo.', 'warning');
+    return;
+  }
+
+  currentModule = module;
+  const meta = MODULES[module];
+
+  // Update topbar
+  document.getElementById('topbarTitle').textContent    = `${meta.icon} ${meta.title}`;
+  document.getElementById('topbarSubtitle').textContent = meta.subtitle;
+
+  // Update active link
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const active = document.querySelector(`.nav-link[data-module="${module}"]`);
+  if (active) active.classList.add('active');
+
+  // Render
+  const mc = document.getElementById('mainContent');
+  mc.innerHTML = renderModule(module);
+}
+
+/* ================================================================
+   MODULE RENDERERS
+================================================================ */
+function renderModule(mod) {
+  const renderers = {
+    dashboard:    renderDashboard,
+    eventos:      renderEventos,
+    empresas:     renderEmpresas,
+    visitantes:   renderVisitantes,
+    campanhas:    renderCampanhas,
+    relatorios:   renderRelatorios,
+    financeiro:   renderFinanceiro,
+    usuarios:     renderUsuarios,
+    unidades:     renderUnidades,
+    funcionarios: renderFuncionarios,
+    configuracoes:renderConfiguracoes,
+    perfil:       renderPerfil,
+  };
+  return (renderers[mod] || renderDashboard)();
+}
+
+/* ─── DASHBOARD ─────────────────────────────────────────────── */
+function renderDashboard() {
+  return `
+  <div class="page-header">
+    <div class="page-title">📊 Dashboard</div>
+    <div class="page-subtitle">Visão geral do sistema – hoje, ${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-icon">👥</div>
+      <div class="stat-info">
+        <div class="stat-label">Visitantes</div>
+        <div class="stat-value">1.847</div>
+        <div class="stat-change up">↑ 32% este mês</div>
+      </div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">🎉</div>
+      <div class="stat-info">
+        <div class="stat-label">Eventos Ativos</div>
+        <div class="stat-value">8</div>
+        <div class="stat-change up">↑ 2 novos</div>
+      </div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-icon">📢</div>
+      <div class="stat-info">
+        <div class="stat-label">Campanhas</div>
+        <div class="stat-value">5</div>
+        <div class="stat-change up">↑ 3 ativas</div>
+      </div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-icon">🏢</div>
+      <div class="stat-info">
+        <div class="stat-label">Empresas</div>
+        <div class="stat-value">12</div>
+        <div class="stat-change up">↑ 1 nova</div>
       </div>
     </div>
   </div>
 
-  <script>
-    let isLoggedIn = localStorage.getItem('manostech_logged_in') === 'true';
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📈 Performance</div>
+        <span class="badge badge-green">Ao vivo</span>
+      </div>
+      <div class="card-body">
+        ${perf([
+          ['Conversão Portal',   '12.5%',  'green'],
+          ['Tempo Médio Sessão', '4m 32s', 'blue'],
+          ['Satisfação NPS',     '87/100', 'green'],
+          ['Receita Mensal',     'R$ 45.230','yellow'],
+        ])}
+      </div>
+    </div>
 
-    function init() {
-      if (isLoggedIn) {
-        showDashboard();
-      } else {
-        showLogin();
-      }
-    }
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🕒 Atividade Recente</div>
+      </div>
+      <div class="card-body">
+        ${activity([
+          ['👥', 'Novo visitante conectado',    '2 min atrás'],
+          ['🎉', 'Evento "Tech Summit" criado', '18 min atrás'],
+          ['📢', 'Campanha Black Friday ativada','1h atrás'],
+          ['🏢', 'Empresa Acme cadastrada',      '3h atrás'],
+          ['⚙️', 'Config. atualizada',           '5h atrás'],
+        ])}
+      </div>
+    </div>
+  </div>`;
+}
 
-    function showLogin() {
-      document.getElementById('loginScreen').classList.remove('hidden');
-      document.getElementById('dashboardScreen').classList.add('hidden');
-    }
+function perf(rows) {
+  return rows.map(([label,value,color]) => `
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border)">
+    <span style="color:var(--text-secondary);font-size:13px">${label}</span>
+    <span class="badge badge-${color}">${value}</span>
+  </div>`).join('');
+}
 
-    function showDashboard() {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('dashboardScreen').classList.remove('hidden');
-      document.getElementById('userEmail').textContent = localStorage.getItem('manostech_email') || 'Usuário';
-      showPage('dashboard');
-    }
+function activity(items) {
+  return items.map(([icon,text,time]) => `
+  <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--glass-border)">
+    <span style="font-size:20px">${icon}</span>
+    <div style="flex:1">
+      <div style="font-size:13px;color:var(--text-primary)">${text}</div>
+      <div style="font-size:11px;color:var(--text-muted)">${time}</div>
+    </div>
+  </div>`).join('');
+}
 
-    function handleLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      if (email && password) {
-        localStorage.setItem('manostech_logged_in', 'true');
-        localStorage.setItem('manostech_email', email);
-        isLoggedIn = true;
-        showDashboard();
-      }
-    }
+/* ─── EVENTOS ───────────────────────────────────────────────── */
+function renderEventos() {
+  const eventos = [
+    { id:1, nome:'Tech Summit 2025',      data:'2025-08-15', status:'ativo',    visitantes:234 },
+    { id:2, nome:'Black Friday Experience',data:'2025-11-28',status:'planejado', visitantes:0   },
+    { id:3, nome:'Workshop React 19',     data:'2025-07-30', status:'ativo',    visitantes:89  },
+    { id:4, nome:'Lançamento Produto X',  data:'2025-09-10', status:'rascunho', visitantes:0   },
+  ];
+  const rows = eventos.map(ev => `
+    <tr>
+      <td><strong>${ev.nome}</strong></td>
+      <td>${ev.data}</td>
+      <td>${badge(ev.status)}</td>
+      <td>${ev.visitantes}</td>
+      <td>
+        <div class="flex gap-8">
+          <button class="btn btn-ghost btn-sm" onclick="toast('Editando: ${ev.nome}','info')">✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('evento',${ev.id},'${ev.nome}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
 
-    function handleLogout() {
-      localStorage.removeItem('manostech_logged_in');
-      localStorage.removeItem('manostech_email');
-      isLoggedIn = false;
+  return `
+  <div class="page-header">
+    <div class="page-title">🎉 Eventos</div>
+    <div class="page-subtitle">Gerencie todos os seus eventos</div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openNewEventoModal()">+ Novo Evento</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr>
+          <th>Nome</th><th>Data</th><th>Status</th><th>Visitantes</th><th>Ações</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── EMPRESAS ──────────────────────────────────────────────── */
+function renderEmpresas() {
+  const dados = [
+    { nome:'Tech Corp', cnpj:'12.345.678/0001-90', email:'contato@techcorp.com', status:'ativo' },
+    { nome:'Acme Brasil', cnpj:'98.765.432/0001-10', email:'rh@acme.com.br', status:'ativo' },
+    { nome:'Startup XYZ', cnpj:'11.222.333/0001-55', email:'oi@xyz.io', status:'inativo' },
+  ];
+  const rows = dados.map(e => `
+    <tr>
+      <td><strong>${e.nome}</strong></td>
+      <td><code style="font-size:12px;color:var(--text-secondary)">${e.cnpj}</code></td>
+      <td>${e.email}</td>
+      <td>${badge(e.status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="toast('Empresa: ${e.nome}','info')">Ver</button></td>
+    </tr>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">🏢 Empresas</div>
+    <div class="page-subtitle">Gestão de empresas cadastradas</div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="toast('Abrindo formulário...','info')">+ Nova Empresa</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>CNPJ</th><th>Email</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── VISITANTES ────────────────────────────────────────────── */
+function renderVisitantes() {
+  const dados = [
+    { nome:'João Silva',    email:'joao@gmail.com',   pais:'🇧🇷 Brasil', data:'24/07/2025 09:15', lgpd:true  },
+    { nome:'Maria Souza',   email:'maria@gmail.com',  pais:'🇧🇷 Brasil', data:'24/07/2025 08:40', lgpd:true  },
+    { nome:'Carlos Ruiz',   email:'carlos@gmail.com', pais:'🇦🇷 Argentina',data:'23/07/2025 17:22',lgpd:true  },
+    { nome:'Ana Pereira',   email:'ana@hotmail.com',  pais:'🇧🇷 Brasil', data:'23/07/2025 14:01', lgpd:false },
+  ];
+  const rows = dados.map(v => `
+    <tr>
+      <td><strong>${v.nome}</strong></td>
+      <td>${v.email}</td>
+      <td>${v.pais}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${v.data}</td>
+      <td>${v.lgpd ? '<span class="badge badge-green">✓ LGPD</span>' : '<span class="badge badge-red">✗ Pendente</span>'}</td>
+    </tr>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">👥 Visitantes</div>
+    <div class="page-subtitle">Histórico de visitantes conectados via portal</div>
+  </div>
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+    <div class="stat-card blue">
+      <div class="stat-icon">👥</div>
+      <div class="stat-info">
+        <div class="stat-label">Total</div>
+        <div class="stat-value">1.847</div>
+      </div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">📅</div>
+      <div class="stat-info">
+        <div class="stat-label">Hoje</div>
+        <div class="stat-value">42</div>
+      </div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <div class="stat-label">Com LGPD</div>
+        <div class="stat-value">97%</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>Email</th><th>País</th><th>Data/Hora</th><th>LGPD</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── CAMPANHAS ─────────────────────────────────────────────── */
+function renderCampanhas() {
+  const dados = [
+    { nome:'Black Friday 2025', tipo:'Desconto', inicio:'01/11/2025', fim:'30/11/2025', status:'planejado' },
+    { nome:'Volta às Aulas',    tipo:'Promoção', inicio:'15/01/2025', fim:'15/02/2025', status:'inativo'   },
+    { nome:'Verão Tech',        tipo:'Fidelização',inicio:'01/12/2024',fim:'28/02/2025',status:'ativo'    },
+  ];
+  const rows = dados.map(c => `
+    <tr>
+      <td><strong>${c.nome}</strong></td>
+      <td>${c.tipo}</td>
+      <td>${c.inicio}</td>
+      <td>${c.fim}</td>
+      <td>${badge(c.status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="toast('Campanha: ${c.nome}','info')">Editar</button></td>
+    </tr>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">📢 Campanhas</div>
+    <div class="page-subtitle">Gerencie suas campanhas de marketing</div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="toast('Nova campanha...','info')">+ Nova Campanha</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>Tipo</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── RELATÓRIOS ────────────────────────────────────────────── */
+function renderRelatorios() {
+  const tipos = [
+    { icon:'👥', titulo:'Visitantes por Período',  desc:'Análise de visitantes conectados',         color:'blue'   },
+    { icon:'💰', titulo:'Relatório Financeiro',     desc:'Receita, despesas e projeções',            color:'green'  },
+    { icon:'📢', titulo:'Performance Campanhas',    desc:'ROI e engajamento por campanha',           color:'yellow' },
+    { icon:'🎉', titulo:'Relatório de Eventos',     desc:'Eventos realizados e métricas',            color:'purple' },
+    { icon:'🏢', titulo:'Relatório Empresas',       desc:'Empresas ativas e inativas',               color:'blue'   },
+    { icon:'📍', titulo:'Análise Geográfica',       desc:'Visitantes por país e cidade',             color:'green'  },
+  ];
+  const cards = tipos.map(t => `
+  <div class="stat-card ${t.color}" style="flex-direction:column;align-items:flex-start;gap:12px;cursor:pointer"
+       onclick="toast('Gerando relatório: ${t.titulo}...','info')">
+    <div style="font-size:28px">${t.icon}</div>
+    <div>
+      <div style="font-weight:700;margin-bottom:4px">${t.titulo}</div>
+      <div style="font-size:12px;color:var(--text-muted)">${t.desc}</div>
+    </div>
+    <button class="btn btn-ghost btn-sm">📥 Exportar</button>
+  </div>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">📈 Relatórios</div>
+    <div class="page-subtitle">Analytics e relatórios exportáveis</div>
+  </div>
+  <div class="stats-grid">${cards}</div>`;
+}
+
+/* ─── FINANCEIRO ────────────────────────────────────────────── */
+function renderFinanceiro() {
+  return `
+  <div class="page-header">
+    <div class="page-title">💰 Financeiro</div>
+    <div class="page-subtitle">Gestão financeira – Acesso restrito</div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card green">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <div class="stat-label">Receita Mensal</div>
+        <div class="stat-value">R$ 45.2k</div>
+        <div class="stat-change up">↑ 18%</div>
+      </div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon">📉</div>
+      <div class="stat-info">
+        <div class="stat-label">Despesas</div>
+        <div class="stat-value">R$ 12.8k</div>
+        <div class="stat-change down">↑ 5%</div>
+      </div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">📊</div>
+      <div class="stat-info">
+        <div class="stat-label">Lucro Líquido</div>
+        <div class="stat-value">R$ 32.4k</div>
+        <div class="stat-change up">↑ 25%</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">Transações Recentes</div></div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Data</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Mensalidade Tech Corp</td><td>Entrada</td><td class="text-green">+ R$ 4.500</td><td>24/07/2025</td><td>${badge('ativo')}</td></tr>
+          <tr><td>Servidor AWS</td><td>Saída</td><td class="text-red">- R$ 890</td><td>23/07/2025</td><td>${badge('ativo')}</td></tr>
+          <tr><td>Mensalidade Acme</td><td>Entrada</td><td class="text-green">+ R$ 3.200</td><td>22/07/2025</td><td>${badge('ativo')}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── USUÁRIOS ──────────────────────────────────────────────── */
+function renderUsuarios() {
+  const dados = [
+    { nome:'Admin Sistema',  email:'admin@demo.com',   role:'admin',       status:'ativo'   },
+    { nome:'Gerente Silva',  email:'gerente@demo.com', role:'gerente',     status:'ativo'   },
+    { nome:'Operador João',  email:'operador@demo.com',role:'operador',    status:'ativo'   },
+    { nome:'Viewer Maria',   email:'viewer@demo.com',  role:'visualizador',status:'inativo' },
+  ];
+  const rows = dados.map(u => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="user-avatar" style="width:32px;height:32px;font-size:13px">
+            ${u.nome.split(' ').map(w=>w[0]).slice(0,2).join('')}
+          </div>
+          <strong>${u.nome}</strong>
+        </div>
+      </td>
+      <td>${u.email}</td>
+      <td>${badge(u.role)}</td>
+      <td>${badge(u.status)}</td>
+      <td>
+        <div class="flex gap-8">
+          <button class="btn btn-ghost btn-sm" onclick="toast('Editando ${u.nome}','info')">✏️</button>
+          ${u.email!==currentUser?.email?`<button class="btn btn-danger btn-sm" onclick="confirmDelete('usuário',0,'${u.nome}')">🗑️</button>`:'<span class="badge badge-blue">Você</span>'}
+        </div>
+      </td>
+    </tr>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">👤 Usuários</div>
+    <div class="page-subtitle">Gerenciar usuários e permissões – Acesso admin</div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="toast('Novo usuário...','info')">+ Novo Usuário</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>Email</th><th>Role</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── UNIDADES ──────────────────────────────────────────────── */
+function renderUnidades() {
+  const dados = [
+    { nome:'Unidade Centro',    tipo:'Loja',        cidade:'São Paulo – SP',  status:'ativo' },
+    { nome:'Unidade Sul',       tipo:'Restaurante',  cidade:'Curitiba – PR',   status:'ativo' },
+    { nome:'Unidade Norte',     tipo:'Cafeteria',    cidade:'Manaus – AM',     status:'inativo'},
+  ];
+  const rows = dados.map(u => `
+    <tr>
+      <td><strong>${u.nome}</strong></td>
+      <td>${u.tipo}</td>
+      <td>${u.cidade}</td>
+      <td>${badge(u.status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="toast('${u.nome}','info')">Ver</button></td>
+    </tr>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">🏬 Unidades</div>
+    <div class="page-subtitle">Estrutura de unidades cadastradas</div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="toast('Nova unidade...','info')">+ Nova Unidade</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>Tipo</th><th>Cidade</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── FUNCIONÁRIOS ──────────────────────────────────────────── */
+function renderFuncionarios() {
+  const dados = [
+    { nome:'Pedro Almeida',  cargo:'Gerente TI',      depto:'Tecnologia', status:'ativo' },
+    { nome:'Lucia Ferreira', cargo:'Analista Mkt',    depto:'Marketing',  status:'ativo' },
+    { nome:'Bruno Costa',    cargo:'Dev Full Stack',   depto:'Tecnologia', status:'ativo' },
+    { nome:'Carla Nunes',    cargo:'Financeira Sr',    depto:'Financeiro', status:'ferias'},
+  ];
+  const rows = dados.map(f => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="user-avatar" style="width:32px;height:32px;font-size:13px">
+            ${f.nome.split(' ').map(w=>w[0]).slice(0,2).join('')}
+          </div>
+          <strong>${f.nome}</strong>
+        </div>
+      </td>
+      <td>${f.cargo}</td>
+      <td>${f.depto}</td>
+      <td>${badge(f.status)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="toast('${f.nome}','info')">Ver</button></td>
+    </tr>`).join('');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">👷 Funcionários</div>
+    <div class="page-subtitle">Gestão de funcionários</div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="toast('Novo funcionário...','info')">+ Novo Funcionário</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>Cargo</th><th>Depto</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+/* ─── CONFIGURAÇÕES ─────────────────────────────────────────── */
+function renderConfiguracoes() {
+  return `
+  <div class="page-header">
+    <div class="page-title">⚙️ Configurações</div>
+    <div class="page-subtitle">Configurações gerais do sistema</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><div class="card-title">🏢 Dados da Empresa</div></div>
+      <div class="form-group">
+        <label class="form-label">Nome da Empresa</label>
+        <input class="form-control" type="text" value="ManosTech Platform" placeholder="Nome da empresa">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CNPJ</label>
+        <input class="form-control" type="text" value="12.345.678/0001-90" placeholder="CNPJ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Corporativo</label>
+        <input class="form-control" type="email" value="contato@manostech.com.br" placeholder="Email">
+      </div>
+      <button class="btn btn-primary" onclick="toast('Configurações salvas!','success')">💾 Salvar</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🔔 Notificações</div></div>
+      ${toggle('Email de novos visitantes', true)}
+      ${toggle('Alertas de campanha', true)}
+      ${toggle('Relatório semanal', false)}
+      ${toggle('Alertas de sistema', true)}
+      <div class="mt-16">
+        <button class="btn btn-primary" onclick="toast('Notificações salvas!','success')">💾 Salvar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🌐 Supabase</div></div>
+      <div class="form-group">
+        <label class="form-label">URL do Projeto</label>
+        <input class="form-control" type="text" placeholder="https://seu-projeto.supabase.co">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chave Anon</label>
+        <input class="form-control" type="password" placeholder="sua-chave-anon-key">
+      </div>
+      <button class="btn btn-success" onclick="toast('Conexão testada com sucesso!','success')">🔗 Testar Conexão</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🎨 Aparência</div></div>
+      <div class="form-group">
+        <label class="form-label">Tema</label>
+        <select class="form-control">
+          <option selected>🌑 Dark Mode (padrão)</option>
+          <option>☀️ Light Mode</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Idioma</label>
+        <select class="form-control">
+          <option selected>🇧🇷 Português</option>
+          <option>🇺🇸 English</option>
+          <option>🇪🇸 Español</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="toast('Aparência salva!','success')">💾 Salvar</button>
+    </div>
+  </div>`;
+}
+
+function toggle(label, checked) {
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--glass-border)">
+    <span style="font-size:13px;color:var(--text-secondary)">${label}</span>
+    <div style="width:40px;height:22px;border-radius:11px;background:${checked?'var(--accent-green)':'var(--glass-border)'};cursor:pointer;position:relative;transition:all .2s"
+         onclick="this.style.background=this.style.background.includes('#4dda8f')?'var(--glass-border)':'var(--accent-green)'">
+      <div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;${checked?'right:3px':'left:3px'};transition:all .2s"></div>
+    </div>
+  </div>`;
+}
+
+/* ─── PERFIL ────────────────────────────────────────────────── */
+function renderPerfil() {
+  const user = currentUser || {};
+  const initials = (user.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('');
+  return `
+  <div class="page-header">
+    <div class="page-title">🙋 Meu Perfil</div>
+    <div class="page-subtitle">Suas informações pessoais</div>
+  </div>
+  <div class="grid-2">
+    <div class="card" style="text-align:center">
+      <div class="user-avatar" style="width:80px;height:80px;font-size:30px;margin:0 auto 16px">
+        ${initials}
+      </div>
+      <div style="font-size:20px;font-weight:700">${user.name||'-'}</div>
+      <div style="font-size:14px;color:var(--text-muted);margin:4px 0 12px">${user.email||'-'}</div>
+      <span class="badge badge-blue" style="font-size:13px">${user.role||'-'}</span>
+      <div class="divider"></div>
+      <button class="btn btn-ghost btn-full" onclick="toast('Foto atualizada!','success')">📷 Alterar Foto</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">✏️ Editar Dados</div></div>
+      <div class="form-group">
+        <label class="form-label">Nome Completo</label>
+        <input class="form-control" type="text" value="${user.name||''}" placeholder="Seu nome">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" value="${user.email||''}" placeholder="Email" readonly style="opacity:.6">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nova Senha</label>
+        <input class="form-control" type="password" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar Senha</label>
+        <input class="form-control" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="toast('Perfil atualizado!','success')">💾 Salvar</button>
+    </div>
+  </div>`;
+}
+
+/* ================================================================
+   HELPERS
+================================================================ */
+function badge(status) {
+  const map = {
+    ativo:       'badge-green',
+    active:      'badge-green',
+    planejado:   'badge-blue',
+    rascunho:    'badge-gray',
+    inativo:     'badge-red',
+    inactive:    'badge-red',
+    cancelado:   'badge-red',
+    ferias:      'badge-yellow',
+    admin:       'badge-purple',
+    gerente:     'badge-blue',
+    operador:    'badge-green',
+    visualizador:'badge-gray',
+  };
+  return `<span class="badge ${map[status]||'badge-gray'}">${status}</span>`;
+}
+
+function confirmDelete(tipo, id, nome) {
+  openModal(
+    `Excluir ${tipo}`,
+    `<p style="color:var(--text-secondary)">Tem certeza que deseja excluir <strong>${nome}</strong>? Esta ação não pode ser desfeita.</p>`,
+    '🗑️ Excluir',
+    () => { closeModal(); toast(`${nome} excluído.`, 'success'); }
+  );
+  document.getElementById('modalConfirmBtn').classList.add('btn-danger');
+  document.getElementById('modalConfirmBtn').classList.remove('btn-primary');
+}
+
+function openNewEventoModal() {
+  openModal('Novo Evento', `
+    <div class="form-group">
+      <label class="form-label">Nome do Evento</label>
+      <input class="form-control" type="text" placeholder="Ex: Tech Summit 2025">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data Início</label>
+        <input class="form-control" type="date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data Fim</label>
+        <input class="form-control" type="date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Status</label>
+      <select class="form-control">
+        <option>ativo</option>
+        <option>planejado</option>
+        <option>rascunho</option>
+      </select>
+    </div>`,
+    '+ Criar Evento',
+    () => { closeModal(); toast('Evento criado com sucesso!', 'success'); loadModule('eventos'); }
+  );
+}
+
+function openPortal() {
+  window.open('layouts/portal.html', '_blank');
+}
+
+/* ================================================================
+   MOBILE SIDEBAR
+================================================================ */
+document.getElementById('menuToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('active');
+});
+
+/* ================================================================
+   NAV LINKS
+================================================================ */
+document.querySelectorAll('.nav-link[data-module]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    loadModule(link.dataset.module);
+    // close mobile sidebar
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+  });
+});
+
+/* ================================================================
+   INIT
+================================================================ */
+(function init() {
+  const saved = localStorage.getItem('mt_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      showDashboard();
+    } catch(e) {
       showLogin();
     }
+  } else {
+    showLogin();
+  }
+})();
+</script>
 
-    function showPage(pageName, event) {
-      if (event) event.preventDefault();
-      document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-      const pageEl = document.getElementById('page-' + pageName);
-      if (pageEl) pageEl.classList.remove('hidden');
-      if (event && event.target) event.target.classList.add('active');
-    }
-
-    init();
-  </script>
 </body>
 </html>
