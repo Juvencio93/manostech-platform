@@ -1,0 +1,28 @@
+{
+  "name": "manostech-platform",
+  "version": "1.0.0",
+  "description": "Platform para gerenciamento de Empresas, Unidades e seus módulos",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "keywords": ["empresa", "unidade", "portal", "campanhas"],
+  "author": "Juvencio93",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.0.0",
+    "dotenv": "^16.0.3",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "joi": "^17.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "jest": "^29.5.0",
+    "eslint": "^8.40.0"
+  }
+}
