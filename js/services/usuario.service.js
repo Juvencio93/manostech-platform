@@ -3,17 +3,11 @@
 // Usuario Service
 // ======================================================
 
-import BaseService from "./base.service.js";
 import api from "../core/api.js";
 import { supabase } from "../core/supabase-client.js";
+import usuarioRepository from "../repositories/usuario.repository.js";
 
-class UsuarioService extends BaseService {
-
-    constructor() {
-
-        super("usuarios");
-
-    }
+class UsuarioService {
 
     // ==================================================
     // Usuário Logado
@@ -31,9 +25,10 @@ class UsuarioService extends BaseService {
                 throw new Error("Usuário não autenticado.");
             }
 
-            return await this
-                .query()
-                .select(`
+            return await usuarioRepository.buscarUm(
+                "auth_user_id",
+                data.user.id,
+                `
                     *,
                     empresas (
                         id,
@@ -46,57 +41,24 @@ class UsuarioService extends BaseService {
                         nome,
                         status
                     )
-                `)
-                .eq("auth_user_id", data.user.id)
-                .single();
+                `
+            );
 
         });
 
     }
 
     // ==================================================
-    // Buscar por Empresa
+    // Buscar
     // ==================================================
 
-    async listarPorEmpresa(empresaId) {
+    async buscar(id) {
 
-        return this.buscarTodos(
+        return api.execute(async () => {
 
-            "empresa_id",
+            return await usuarioRepository.buscar(id);
 
-            empresaId,
-
-            {
-
-                orderBy: "nome",
-                ascending: true
-
-            }
-
-        );
-
-    }
-
-    // ==================================================
-    // Buscar por Unidade
-    // ==================================================
-
-    async listarPorUnidade(unidadeId) {
-
-        return this.buscarTodos(
-
-            "unidade_id",
-
-            unidadeId,
-
-            {
-
-                orderBy: "nome",
-                ascending: true
-
-            }
-
-        );
+        });
 
     }
 
@@ -106,7 +68,11 @@ class UsuarioService extends BaseService {
 
     async buscarPorEmail(email) {
 
-        return this.buscarUm("email", email);
+        return api.execute(async () => {
+
+            return await usuarioRepository.buscarPorEmail(email);
+
+        });
 
     }
 
@@ -116,56 +82,79 @@ class UsuarioService extends BaseService {
 
     async buscarPorCpf(cpf) {
 
-        return this.buscarUm("cpf", cpf);
+        return api.execute(async () => {
 
-    }
-
-    // ==================================================
-    // Buscar por Status
-    // ==================================================
-
-    async listarPorStatus(status) {
-
-        return this.buscarTodos(
-
-            "status",
-
-            status,
-
-            {
-
-                orderBy: "nome",
-                ascending: true
-
-            }
-
-        );
-
-    }
-
-    // ==================================================
-    // Ativar Usuário
-    // ==================================================
-
-    async ativar(id) {
-
-        return this.atualizar(id, {
-
-            status: "ativo"
+            return await usuarioRepository.buscarPorCpf(cpf);
 
         });
 
     }
 
     // ==================================================
-    // Desativar Usuário
+    // Listar Empresa
     // ==================================================
 
-    async desativar(id) {
+    async listarPorEmpresa(empresaId) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            status: "inativo"
+            return await usuarioRepository.listarPorEmpresa(empresaId);
+
+        });
+
+    }
+
+    // ==================================================
+    // Listar Unidade
+    // ==================================================
+
+    async listarPorUnidade(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await usuarioRepository.listarPorUnidade(unidadeId);
+
+        });
+
+    }
+
+    // ==================================================
+    // Criar
+    // ==================================================
+
+    async criar(dados) {
+
+        return api.execute(async () => {
+
+            return await usuarioRepository.criar(dados);
+
+        });
+
+    }
+
+    // ==================================================
+    // Atualizar
+    // ==================================================
+
+    async atualizar(id, dados) {
+
+        return api.execute(async () => {
+
+            return await usuarioRepository.atualizar(id, dados);
+
+        });
+
+    }
+
+    // ==================================================
+    // Excluir
+    // ==================================================
+
+    async excluir(id) {
+
+        return api.execute(async () => {
+
+            return await usuarioRepository.excluir(id);
 
         });
 
@@ -179,23 +168,15 @@ class UsuarioService extends BaseService {
 
         return api.execute(async () => {
 
-            return await supabase.auth.updateUser({
-
+            const { data, error } = await supabase.auth.updateUser({
                 password
-
             });
 
+            if (error) throw error;
+
+            return data;
+
         });
-
-    }
-
-    // ==================================================
-    // Atualizar Perfil
-    // ==================================================
-
-    async atualizarPerfil(id, dados) {
-
-        return this.atualizar(id, dados);
 
     }
 
