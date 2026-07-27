@@ -10,7 +10,21 @@ export default class BaseService {
 
     constructor(table) {
 
+        if (!table) {
+            throw new Error("A tabela deve ser informada.");
+        }
+
         this.table = table;
+
+    }
+
+    // ==================================================
+    // Query Base
+    // ==================================================
+
+    query() {
+
+        return supabase.from(this.table);
 
     }
 
@@ -18,13 +32,17 @@ export default class BaseService {
     // Listar
     // ==================================================
 
-    async listar(orderBy = "created_at", ascending = true) {
+    async listar({
+        select = "*",
+        orderBy = "created_at",
+        ascending = true
+    } = {}) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.table)
-                .select("*")
+            return await this
+                .query()
+                .select(select)
                 .order(orderBy, { ascending });
 
         });
@@ -35,15 +53,50 @@ export default class BaseService {
     // Buscar por ID
     // ==================================================
 
-    async buscar(id) {
+    async buscar(id, select = "*") {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.table)
-                .select("*")
+            return await this
+                .query()
+                .select(select)
                 .eq("id", id)
                 .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Buscar Um
+    // ==================================================
+
+    async buscarUm(column, value, select = "*") {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select(select)
+                .eq(column, value)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Buscar Vários
+    // ==================================================
+
+    async buscarTodos(column, value, select = "*") {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select(select)
+                .eq(column, value);
 
         });
 
@@ -57,8 +110,8 @@ export default class BaseService {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.table)
+            return await this
+                .query()
                 .insert(data)
                 .select()
                 .single();
@@ -75,8 +128,8 @@ export default class BaseService {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.table)
+            return await this
+                .query()
                 .update(data)
                 .eq("id", id)
                 .select()
@@ -94,12 +147,65 @@ export default class BaseService {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.table)
+            return await this
+                .query()
                 .delete()
                 .eq("id", id);
 
         });
+
+    }
+
+    // ==================================================
+    // Contar
+    // ==================================================
+
+    async contar(column = "*") {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select(column, {
+                    count: "exact",
+                    head: true
+                });
+
+        });
+
+    }
+
+    // ==================================================
+    // Existe?
+    // ==================================================
+
+    async existe(column, value) {
+
+        const result = await api.execute(async () => {
+
+            return await this
+                .query()
+                .select("id")
+                .eq(column, value)
+                .limit(1);
+
+        });
+
+        if (!result.success) {
+
+            return result;
+
+        }
+
+        return {
+
+            success: true,
+
+            data: result.data.length > 0,
+
+            error: null
+
+        };
 
     }
 
