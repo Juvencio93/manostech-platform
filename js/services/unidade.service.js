@@ -5,6 +5,7 @@
 
 import BaseService from "./base.service.js";
 import api from "../core/api.js";
+import { supabase } from "../core/supabase-client.js";
 
 class UnidadeService extends BaseService {
 
@@ -15,20 +16,35 @@ class UnidadeService extends BaseService {
     }
 
     // ==================================================
-    // Buscar por Empresa
+    // Buscar Unidade
+    // ==================================================
+
+    async buscar(id) {
+
+        return super.buscar(id);
+
+    }
+
+    // ==================================================
+    // Listar por Empresa
     // ==================================================
 
     async listarPorEmpresa(empresaId) {
 
-        return api.execute(async () => {
+        return this.buscarTodos(
 
-            return await this
-                .query()
-                .select("*")
-                .eq("empresa_id", empresaId)
-                .order("nome");
+            "empresa_id",
 
-        });
+            empresaId,
+
+            {
+
+                orderBy: "nome",
+                ascending: true
+
+            }
+
+        );
 
     }
 
@@ -36,15 +52,30 @@ class UnidadeService extends BaseService {
     // Buscar Unidade Principal
     // ==================================================
 
-    async buscarPrincipal(empresaId) {
+    async principal(empresaId) {
+
+        return this.buscarUm(
+
+            "empresa_id",
+
+            empresaId
+
+        );
+
+    }
+
+    // ==================================================
+    // Configurações da Unidade
+    // ==================================================
+
+    async configuracoes(unidadeId) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
+            return await supabase
+                .from("configuracoes")
                 .select("*")
-                .eq("empresa_id", empresaId)
-                .eq("principal", true)
+                .eq("unidade_id", unidadeId)
                 .single();
 
         });
@@ -52,14 +83,77 @@ class UnidadeService extends BaseService {
     }
 
     // ==================================================
-    // Alterar Status
+    // Portal Config
     // ==================================================
 
-    async alterarStatus(id, status) {
+    async portal(unidadeId) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            status
+            return await supabase
+                .from("portal_config")
+                .select("*")
+                .eq("unidade_id", unidadeId)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Dashboard Cache
+    // ==================================================
+
+    async dashboard(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from("dashboard_cache")
+                .select("*")
+                .eq("unidade_id", unidadeId)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Arquivos
+    // ==================================================
+
+    async arquivos(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from("arquivos")
+                .select("*")
+                .eq("unidade_id", unidadeId)
+                .order("created_at", {
+
+                    ascending: false
+
+                });
+
+        });
+
+    }
+
+    // ==================================================
+    // Campanhas
+    // ==================================================
+
+    async campanhas(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from("campanhas")
+                .select("*")
+                .eq("unidade_id", unidadeId)
+                .eq("ativo", true)
+                .order("ordem");
 
         });
 
@@ -74,6 +168,20 @@ class UnidadeService extends BaseService {
         return this.atualizar(id, {
 
             logo_url: logoUrl
+
+        });
+
+    }
+
+    // ==================================================
+    // Alterar Status
+    // ==================================================
+
+    async alterarStatus(id, status) {
+
+        return this.atualizar(id, {
+
+            status
 
         });
 
