@@ -1,51 +1,158 @@
-export const eventoService = {
-  async getAllEventos(filters = {}) {
-    try {
-      // TODO: Chamar API real
-      return [];
-    } catch (error) {
-      console.error('Erro ao carregar eventos:', error);
-      return [];
-    }
-  },
+// ======================================================
+// Manos Tech Platform
+// Evento Service
+// ======================================================
 
-  async getEvento(id) {
-    try {
-      // TODO: Chamar API real
-      return null;
-    } catch (error) {
-      console.error('Erro ao carregar evento:', error);
-      return null;
-    }
-  },
+import BaseService from "./base.service.js";
+import api from "../core/api.js";
 
-  async createEvento(data) {
-    try {
-      // TODO: Chamar API real
-      return { success: true, id: Date.now() };
-    } catch (error) {
-      console.error('Erro ao criar evento:', error);
-      return { success: false, error: error.message };
-    }
-  },
+class EventoService extends BaseService {
 
-  async updateEvento(id, data) {
-    try {
-      // TODO: Chamar API real
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao atualizar evento:', error);
-      return { success: false, error: error.message };
-    }
-  },
+    constructor() {
 
-  async deleteEvento(id) {
-    try {
-      // TODO: Chamar API real
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao deletar evento:', error);
-      return { success: false, error: error.message };
+        super("eventos");
+
     }
-  }
-};
+
+    // ==================================================
+    // Eventos da Empresa
+    // ==================================================
+
+    async listarPorEmpresa(empresaId) {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select("*")
+                .eq("empresa_id", empresaId)
+                .order("data_inicio", { ascending: false });
+
+        });
+
+    }
+
+    // ==================================================
+    // Eventos Ativos
+    // ==================================================
+
+    async listarAtivos(empresaId) {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select("*")
+                .eq("empresa_id", empresaId)
+                .eq("status", "ativo")
+                .order("data_inicio", { ascending: false });
+
+        });
+
+    }
+
+    // ==================================================
+    // Buscar por Slug
+    // ==================================================
+
+    async buscarPorSlug(slug) {
+
+        return this.buscarUm("slug", slug);
+
+    }
+
+    // ==================================================
+    // Buscar Evento Atual
+    // ==================================================
+
+    async buscarAtual(empresaId) {
+
+        return api.execute(async () => {
+
+            const hoje = new Date().toISOString();
+
+            return await this
+                .query()
+                .select("*")
+                .eq("empresa_id", empresaId)
+                .lte("data_inicio", hoje)
+                .gte("data_fim", hoje)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Encerrar Evento
+    // ==================================================
+
+    async encerrar(id) {
+
+        return this.atualizar(id, {
+
+            status: "encerrado"
+
+        });
+
+    }
+
+    // ==================================================
+    // Cancelar Evento
+    // ==================================================
+
+    async cancelar(id) {
+
+        return this.atualizar(id, {
+
+            status: "cancelado"
+
+        });
+
+    }
+
+    // ==================================================
+    // Publicar Evento
+    // ==================================================
+
+    async publicar(id) {
+
+        return this.atualizar(id, {
+
+            status: "ativo"
+
+        });
+
+    }
+
+    // ==================================================
+    // Atualizar Banner
+    // ==================================================
+
+    async atualizarBanner(id, bannerUrl) {
+
+        return this.atualizar(id, {
+
+            banner_principal: bannerUrl
+
+        });
+
+    }
+
+    // ==================================================
+    // Atualizar Logo
+    // ==================================================
+
+    async atualizarLogo(id, logoUrl) {
+
+        return this.atualizar(id, {
+
+            logo_url: logoUrl
+
+        });
+
+    }
+
+}
+
+export default new EventoService();
