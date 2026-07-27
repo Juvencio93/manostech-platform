@@ -5,6 +5,7 @@
 
 import BaseService from "./base.service.js";
 import api from "../core/api.js";
+import { supabase } from "../core/supabase-client.js";
 
 class EmpresaService extends BaseService {
 
@@ -15,12 +16,12 @@ class EmpresaService extends BaseService {
     }
 
     // ==================================================
-    // Buscar por Slug
+    // Buscar Empresa
     // ==================================================
 
-    async buscarPorSlug(slug) {
+    async buscar(id) {
 
-        return this.buscarUm("slug", slug);
+        return super.buscar(id);
 
     }
 
@@ -35,36 +36,92 @@ class EmpresaService extends BaseService {
     }
 
     // ==================================================
-    // Empresas Ativas
+    // Listar Empresas Ativas
     // ==================================================
 
     async listarAtivas() {
 
+        return this.buscarTodos(
+
+            "status",
+
+            "ativo",
+
+            {
+
+                orderBy: "nome",
+                ascending: true
+
+            }
+
+        );
+
+    }
+
+    // ==================================================
+    // Buscar Assinatura
+    // ==================================================
+
+    async assinatura(empresaId) {
+
         return api.execute(async () => {
 
-            return await this
-                .query()
+            return await supabase
+                .from("assinaturas")
                 .select("*")
-                .eq("status", "ativo")
-                .order("nome");
+                .eq("empresa_id", empresaId)
+                .single();
 
         });
 
     }
 
     // ==================================================
-    // Empresas Inativas
+    // Buscar Módulos
     // ==================================================
 
-    async listarInativas() {
+    async modulos(empresaId) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .select("*")
-                .eq("status", "inativo")
-                .order("nome");
+            return await supabase
+                .from("empresa_modulos")
+                .select(`
+                    *,
+                    modulos (
+                        id,
+                        nome,
+                        codigo,
+                        descricao
+                    )
+                `)
+                .eq("empresa_id", empresaId)
+                .eq("ativo", true);
+
+        });
+
+    }
+
+    // ==================================================
+    // Empresa Possui Módulo
+    // ==================================================
+
+    async possuiModulo(empresaId, codigoModulo) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from("empresa_modulos")
+                .select(`
+                    ativo,
+                    modulos!inner (
+                        codigo
+                    )
+                `)
+                .eq("empresa_id", empresaId)
+                .eq("ativo", true)
+                .eq("modulos.codigo", codigoModulo)
+                .maybeSingle();
 
         });
 
@@ -85,20 +142,6 @@ class EmpresaService extends BaseService {
     }
 
     // ==================================================
-    // Atualizar Configurações
-    // ==================================================
-
-    async atualizarConfiguracoes(id, configuracoes) {
-
-        return this.atualizar(id, {
-
-            configuracoes
-
-        });
-
-    }
-
-    // ==================================================
     // Alterar Status
     // ==================================================
 
@@ -109,6 +152,32 @@ class EmpresaService extends BaseService {
             status
 
         });
+
+    }
+
+    // ==================================================
+    // Empresa Ativa
+    // ==================================================
+
+    async empresaAtiva(id) {
+
+        const result = await this.buscar(id);
+
+        if (!result.success) {
+
+            return result;
+
+        }
+
+        return {
+
+            success: true,
+
+            data: result.data.status === "ativo",
+
+            error: null
+
+        };
 
     }
 
