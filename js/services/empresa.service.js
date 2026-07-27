@@ -5,7 +5,6 @@
 
 import BaseService from "./base.service.js";
 import api from "../core/api.js";
-import { supabase } from "../core/supabase-client.js";
 
 class EmpresaService extends BaseService {
 
@@ -21,15 +20,7 @@ class EmpresaService extends BaseService {
 
     async buscarPorSlug(slug) {
 
-        return api.execute(async () => {
-
-            return await supabase
-                .from(this.table)
-                .select("*")
-                .eq("slug", slug)
-                .single();
-
-        });
+        return this.buscarUm("slug", slug);
 
     }
 
@@ -39,15 +30,7 @@ class EmpresaService extends BaseService {
 
     async buscarPorCnpj(cnpj) {
 
-        return api.execute(async () => {
-
-            return await supabase
-                .from(this.table)
-                .select("*")
-                .eq("cnpj", cnpj)
-                .single();
-
-        });
+        return this.buscarUm("cnpj", cnpj);
 
     }
 
@@ -59,10 +42,28 @@ class EmpresaService extends BaseService {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.table)
+            return await this
+                .query()
                 .select("*")
                 .eq("status", "ativo")
+                .order("nome");
+
+        });
+
+    }
+
+    // ==================================================
+    // Empresas Inativas
+    // ==================================================
+
+    async listarInativas() {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select("*")
+                .eq("status", "inativo")
                 .order("nome");
 
         });
@@ -73,20 +74,39 @@ class EmpresaService extends BaseService {
     // Atualizar Logo
     // ==================================================
 
-    async atualizarLogo(id, logo_url) {
+    async atualizarLogo(id, logoUrl) {
 
-        return api.execute(async () => {
+        return this.atualizar(id, {
 
-            return await supabase
-                .from(this.table)
-                .update({
+            logo_url: logoUrl
 
-                    logo_url
+        });
 
-                })
-                .eq("id", id)
-                .select()
-                .single();
+    }
+
+    // ==================================================
+    // Atualizar Configurações
+    // ==================================================
+
+    async atualizarConfiguracoes(id, configuracoes) {
+
+        return this.atualizar(id, {
+
+            configuracoes
+
+        });
+
+    }
+
+    // ==================================================
+    // Alterar Status
+    // ==================================================
+
+    async alterarStatus(id, status) {
+
+        return this.atualizar(id, {
+
+            status
 
         });
 
