@@ -3,127 +3,199 @@
 // Usuario Service
 // ======================================================
 
+import BaseService from "./base.service.js";
 import api from "../core/api.js";
 import { supabase } from "../core/supabase-client.js";
 
-class UsuarioService {
+class UsuarioService extends BaseService {
+
+    constructor() {
+
+        super("usuarios");
+
+    }
 
     // ==================================================
-    // Usuário autenticado
+    // Usuário Logado
     // ==================================================
 
     async me() {
 
         return api.execute(async () => {
 
-            const { data: auth } = await supabase.auth.getUser();
+            const { data, error } = await supabase.auth.getUser();
 
-            if (!auth.user) {
+            if (error) throw error;
 
+            if (!data.user) {
                 throw new Error("Usuário não autenticado.");
+            }
+
+            return await this
+                .query()
+                .select(`
+                    *,
+                    empresas (
+                        id,
+                        nome,
+                        cnpj,
+                        status
+                    ),
+                    unidades (
+                        id,
+                        nome,
+                        status
+                    )
+                `)
+                .eq("auth_user_id", data.user.id)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Buscar por Empresa
+    // ==================================================
+
+    async listarPorEmpresa(empresaId) {
+
+        return this.buscarTodos(
+
+            "empresa_id",
+
+            empresaId,
+
+            {
+
+                orderBy: "nome",
+                ascending: true
 
             }
 
-            return await supabase
-                .from("usuarios")
-                .select(`
-                    *,
-                    empresa:empresas(*),
-                    unidade:unidades(*)
-                `)
-                .eq("auth_user_id", auth.user.id)
-                .single();
+        );
+
+    }
+
+    // ==================================================
+    // Buscar por Unidade
+    // ==================================================
+
+    async listarPorUnidade(unidadeId) {
+
+        return this.buscarTodos(
+
+            "unidade_id",
+
+            unidadeId,
+
+            {
+
+                orderBy: "nome",
+                ascending: true
+
+            }
+
+        );
+
+    }
+
+    // ==================================================
+    // Buscar por Email
+    // ==================================================
+
+    async buscarPorEmail(email) {
+
+        return this.buscarUm("email", email);
+
+    }
+
+    // ==================================================
+    // Buscar por CPF
+    // ==================================================
+
+    async buscarPorCpf(cpf) {
+
+        return this.buscarUm("cpf", cpf);
+
+    }
+
+    // ==================================================
+    // Buscar por Status
+    // ==================================================
+
+    async listarPorStatus(status) {
+
+        return this.buscarTodos(
+
+            "status",
+
+            status,
+
+            {
+
+                orderBy: "nome",
+                ascending: true
+
+            }
+
+        );
+
+    }
+
+    // ==================================================
+    // Ativar Usuário
+    // ==================================================
+
+    async ativar(id) {
+
+        return this.atualizar(id, {
+
+            status: "ativo"
 
         });
 
     }
 
     // ==================================================
-    // Buscar por ID
+    // Desativar Usuário
     // ==================================================
 
-    async buscar(id) {
+    async desativar(id) {
 
-        return api.execute(async () => {
+        return this.atualizar(id, {
 
-            return await supabase
-                .from("usuarios")
-                .select("*")
-                .eq("id", id)
-                .single();
+            status: "inativo"
 
         });
 
     }
 
     // ==================================================
-    // Listar
+    // Alterar Senha
     // ==================================================
 
-    async listar() {
+    async alterarSenha(password) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from("usuarios")
-                .select("*")
-                .order("nome");
+            return await supabase.auth.updateUser({
+
+                password
+
+            });
 
         });
 
     }
 
     // ==================================================
-    // Criar
+    // Atualizar Perfil
     // ==================================================
 
-    async criar(usuario) {
+    async atualizarPerfil(id, dados) {
 
-        return api.execute(async () => {
-
-            return await supabase
-                .from("usuarios")
-                .insert(usuario)
-                .select()
-                .single();
-
-        });
-
-    }
-
-    // ==================================================
-    // Atualizar
-    // ==================================================
-
-    async atualizar(id, usuario) {
-
-        return api.execute(async () => {
-
-            return await supabase
-                .from("usuarios")
-                .update(usuario)
-                .eq("id", id)
-                .select()
-                .single();
-
-        });
-
-    }
-
-    // ==================================================
-    // Excluir
-    // ==================================================
-
-    async excluir(id) {
-
-        return api.execute(async () => {
-
-            return await supabase
-                .from("usuarios")
-                .delete()
-                .eq("id", id);
-
-        });
+        return this.atualizar(id, dados);
 
     }
 
