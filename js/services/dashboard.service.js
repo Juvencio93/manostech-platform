@@ -4,12 +4,16 @@
 // ======================================================
 
 import api from "../core/api.js";
+import { supabase } from "../core/supabase-client.js";
 
 class DashboardService {
 
     constructor() {
 
-        this.view = "vw_dashboard";
+        this.dashboardView = "vw_dashboard";
+        this.acessosHoraView = "vw_acessos_hora";
+        this.acessosDiaView = "vw_acessos_dia";
+        this.rankingView = "vw_ranking_visitantes";
 
     }
 
@@ -17,12 +21,12 @@ class DashboardService {
     // Dashboard da Loja
     // ==================================================
 
-    async loja(lojaId) {
+    async dashboardLoja(lojaId) {
 
         return api.execute(async () => {
 
             return await supabase
-                .from(this.view)
+                .from(this.dashboardView)
                 .select("*")
                 .eq("loja_id", lojaId)
                 .single();
@@ -35,106 +39,15 @@ class DashboardService {
     // Dashboard do Evento
     // ==================================================
 
-    async evento(eventoId) {
+    async dashboardEvento(eventoId) {
 
         return api.execute(async () => {
 
             return await supabase
-                .from(this.view)
+                .from(this.dashboardView)
                 .select("*")
                 .eq("evento_id", eventoId)
                 .single();
-
-        });
-
-    }
-
-    // ==================================================
-    // Total de Visitantes
-    // ==================================================
-
-    async totalVisitantes(lojaId) {
-
-        return api.execute(async () => {
-
-            return await supabase
-                .from("visitantes")
-                .select("id", {
-
-                    count: "exact",
-                    head: true
-
-                })
-                .eq("loja_id", lojaId);
-
-        });
-
-    }
-
-    // ==================================================
-    // Conectados Agora
-    // ==================================================
-
-    async conectadosAgora(lojaId) {
-
-        return api.execute(async () => {
-
-            return await supabase
-                .from("visitantes")
-                .select("id", {
-
-                    count: "exact",
-                    head: true
-
-                })
-                .eq("loja_id", lojaId)
-                .eq("online", true);
-
-        });
-
-    }
-
-    // ==================================================
-    // Novos Clientes
-    // ==================================================
-
-    async novosClientes(lojaId) {
-
-        return api.execute(async () => {
-
-            return await supabase
-                .from("visitantes")
-                .select("id", {
-
-                    count: "exact",
-                    head: true
-
-                })
-                .eq("loja_id", lojaId)
-                .eq("primeira_visita", true);
-
-        });
-
-    }
-
-    // ==================================================
-    // Clientes Recorrentes
-    // ==================================================
-
-    async recorrentes(lojaId) {
-
-        return api.execute(async () => {
-
-            return await supabase
-                .from("visitantes")
-                .select("id", {
-
-                    count: "exact",
-                    head: true
-
-                })
-                .eq("loja_id", lojaId)
-                .gt("total_visitas", 1);
 
         });
 
@@ -149,7 +62,7 @@ class DashboardService {
         return api.execute(async () => {
 
             return await supabase
-                .from("vw_acessos_hora")
+                .from(this.acessosHoraView)
                 .select("*")
                 .eq("loja_id", lojaId)
                 .order("hora");
@@ -167,7 +80,7 @@ class DashboardService {
         return api.execute(async () => {
 
             return await supabase
-                .from("vw_acessos_dia")
+                .from(this.acessosDiaView)
                 .select("*")
                 .eq("loja_id", lojaId)
                 .order("data");
@@ -180,15 +93,40 @@ class DashboardService {
     // Ranking de Visitantes
     // ==================================================
 
-    async ranking(lojaId) {
+    async rankingVisitantes(lojaId, limite = 20) {
 
         return api.execute(async () => {
 
             return await supabase
-                .from("vw_ranking_visitantes")
+                .from(this.rankingView)
                 .select("*")
                 .eq("loja_id", lojaId)
-                .limit(20);
+                .limit(limite);
+
+        });
+
+    }
+
+    // ==================================================
+    // Resumo Geral
+    // ==================================================
+
+    async resumo(lojaId) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from(this.dashboardView)
+                .select(`
+                    total_visitantes,
+                    conectados_agora,
+                    novos_clientes,
+                    clientes_recorrentes,
+                    whatsapp_capturados,
+                    emails_capturados
+                `)
+                .eq("loja_id", lojaId)
+                .single();
 
         });
 
