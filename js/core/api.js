@@ -1,55 +1,152 @@
-export const api = {
-  baseUrl: process.env.API_URL || 'http://localhost:3000/api',
+// ======================================================
+// Manos Tech Platform
+// API
+// ======================================================
 
-  async request(endpoint, options = {}) {
-    const url = `${this.baseUrl}${endpoint}`;
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers
-    };
+import { supabase } from "./supabase-client.js";
 
-    // Adicionar token de autenticação se existir
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+class Api {
+
+    // ==================================================
+    // SELECT
+    // ==================================================
+
+    async select(table, query) {
+
+        try {
+
+            const { data, error } = await query(
+                supabase.from(table)
+            );
+
+            if (error) throw error;
+
+            return {
+                success: true,
+                data,
+                error: null
+            };
+
+        } catch (error) {
+
+            console.error(error);
+
+            return {
+                success: false,
+                data: null,
+                error
+            };
+
+        }
+
     }
 
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers
-      });
+    // ==================================================
+    // INSERT
+    // ==================================================
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
+    async insert(table, values) {
 
-      return await response.json();
-    } catch (error) {
-      console.error('API Request Error:', error);
-      throw error;
+        try {
+
+            const { data, error } = await supabase
+                .from(table)
+                .insert(values)
+                .select();
+
+            if (error) throw error;
+
+            return {
+                success: true,
+                data,
+                error: null
+            };
+
+        } catch (error) {
+
+            console.error(error);
+
+            return {
+                success: false,
+                data: null,
+                error
+            };
+
+        }
+
     }
-  },
 
-  get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
-  },
+    // ==================================================
+    // UPDATE
+    // ==================================================
 
-  post(endpoint, data) {
-    return this.request(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-  },
+    async update(table, values, column, value) {
 
-  put(endpoint, data) {
-    return this.request(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    });
-  },
+        try {
 
-  delete(endpoint) {
-    return this.request(endpoint, { method: 'DELETE' });
-  }
-};
+            const { data, error } = await supabase
+                .from(table)
+                .update(values)
+                .eq(column, value)
+                .select();
+
+            if (error) throw error;
+
+            return {
+                success: true,
+                data,
+                error: null
+            };
+
+        } catch (error) {
+
+            console.error(error);
+
+            return {
+                success: false,
+                data: null,
+                error
+            };
+
+        }
+
+    }
+
+    // ==================================================
+    // DELETE
+    // ==================================================
+
+    async delete(table, column, value) {
+
+        try {
+
+            const { error } = await supabase
+                .from(table)
+                .delete()
+                .eq(column, value);
+
+            if (error) throw error;
+
+            return {
+                success: true,
+                error: null
+            };
+
+        } catch (error) {
+
+            console.error(error);
+
+            return {
+                success: false,
+                error
+            };
+
+        }
+
+    }
+
+}
+
+const api = new Api();
+
+export default api;
