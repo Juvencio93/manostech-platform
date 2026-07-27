@@ -1,41 +1,148 @@
-export const visitanteService = {
-  async getAllVisitantes(filters = {}) {
-    try {
-      // TODO: Chamar API real
-      return [];
-    } catch (error) {
-      console.error('Erro ao carregar visitantes:', error);
-      return [];
-    }
-  },
+// ======================================================
+// Manos Tech Platform
+// Visitante Service
+// ======================================================
 
-  async getVisitante(id) {
-    try {
-      // TODO: Chamar API real
-      return null;
-    } catch (error) {
-      console.error('Erro ao carregar visitante:', error);
-      return null;
-    }
-  },
+import api from "../core/api.js";
+import visitanteRepository from "../repositories/visitante.repository.js";
 
-  async createVisitante(data) {
-    try {
-      // TODO: Chamar API real
-      return { success: true, id: Date.now() };
-    } catch (error) {
-      console.error('Erro ao criar visitante:', error);
-      return { success: false, error: error.message };
-    }
-  },
+class VisitanteService {
 
-  async registerVisit(visitanteId, lojaId) {
-    try {
-      // TODO: Chamar API real
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao registrar visita:', error);
-      return { success: false, error: error.message };
+    async buscar(id) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.buscar(id);
+
+        });
+
     }
-  }
-};
+
+    async listar() {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.listar();
+
+        });
+
+    }
+
+    async listarPorUnidade(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.listarPorUnidade(unidadeId);
+
+        });
+
+    }
+
+    async buscarPorDocumento(documento) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.buscarPorDocumento(documento);
+
+        });
+
+    }
+
+    async buscarPorTelefone(telefone) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.buscarPorTelefone(telefone);
+
+        });
+
+    }
+
+    async buscarPorEmail(email) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.buscarPorEmail(email);
+
+        });
+
+    }
+
+    async buscarPorNome(unidadeId, nome) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.buscarPorNome(
+                unidadeId,
+                nome
+            );
+
+        });
+
+    }
+
+    async total(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.total(unidadeId);
+
+        });
+
+    }
+
+    async novosHoje(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.novosHoje(unidadeId);
+
+        });
+
+    }
+
+    async clientesFrequentes(unidadeId) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.clientesFrequentes(
+                unidadeId
+            );
+
+        });
+
+    }
+
+    async criar(dados) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.criar(dados);
+
+        });
+
+    }
+
+    async atualizar(id, dados) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.atualizar(id, dados);
+
+        });
+
+    }
+
+    async excluir(id) {
+
+        return api.execute(async () => {
+
+            return await visitanteRepository.excluir(id);
+
+        });
+
+    }
+
+}
+
+export default new VisitanteService();
