@@ -3,25 +3,38 @@
 // Empresa Service
 // ======================================================
 
-import BaseService from "./base.service.js";
 import api from "../core/api.js";
 import { supabase } from "../core/supabase-client.js";
 
-class EmpresaService extends BaseService {
+import empresaRepository from "../repositories/empresa.repository.js";
 
-    constructor() {
-
-        super("empresas");
-
-    }
+class EmpresaService {
 
     // ==================================================
-    // Buscar Empresa
+    // Buscar
     // ==================================================
 
     async buscar(id) {
 
-        return super.buscar(id);
+        return api.execute(async () => {
+
+            return await empresaRepository.buscar(id);
+
+        });
+
+    }
+
+    // ==================================================
+    // Listar
+    // ==================================================
+
+    async listar() {
+
+        return api.execute(async () => {
+
+            return await empresaRepository.listar();
+
+        });
 
     }
 
@@ -31,30 +44,25 @@ class EmpresaService extends BaseService {
 
     async buscarPorCnpj(cnpj) {
 
-        return this.buscarUm("cnpj", cnpj);
+        return api.execute(async () => {
+
+            return await empresaRepository.buscarPorCnpj(cnpj);
+
+        });
 
     }
 
     // ==================================================
-    // Listar Empresas Ativas
+    // Empresas Ativas
     // ==================================================
 
     async listarAtivas() {
 
-        return this.buscarTodos(
+        return api.execute(async () => {
 
-            "status",
+            return await empresaRepository.listarAtivas();
 
-            "ativo",
-
-            {
-
-                orderBy: "nome",
-                ascending: true
-
-            }
-
-        );
+        });
 
     }
 
@@ -66,11 +74,15 @@ class EmpresaService extends BaseService {
 
         return api.execute(async () => {
 
-            return await supabase
+            const { data, error } = await supabase
                 .from("assinaturas")
                 .select("*")
                 .eq("empresa_id", empresaId)
                 .single();
+
+            if (error) throw error;
+
+            return data;
 
         });
 
@@ -84,7 +96,7 @@ class EmpresaService extends BaseService {
 
         return api.execute(async () => {
 
-            return await supabase
+            const { data, error } = await supabase
                 .from("empresa_modulos")
                 .select(`
                     *,
@@ -98,19 +110,23 @@ class EmpresaService extends BaseService {
                 .eq("empresa_id", empresaId)
                 .eq("ativo", true);
 
+            if (error) throw error;
+
+            return data;
+
         });
 
     }
 
     // ==================================================
-    // Empresa Possui Módulo
+    // Possui Módulo
     // ==================================================
 
-    async possuiModulo(empresaId, codigoModulo) {
+    async possuiModulo(empresaId, codigo) {
 
         return api.execute(async () => {
 
-            return await supabase
+            const { data, error } = await supabase
                 .from("empresa_modulos")
                 .select(`
                     ativo,
@@ -120,64 +136,56 @@ class EmpresaService extends BaseService {
                 `)
                 .eq("empresa_id", empresaId)
                 .eq("ativo", true)
-                .eq("modulos.codigo", codigoModulo)
+                .eq("modulos.codigo", codigo)
                 .maybeSingle();
 
-        });
+            if (error) throw error;
 
-    }
-
-    // ==================================================
-    // Atualizar Logo
-    // ==================================================
-
-    async atualizarLogo(id, logoUrl) {
-
-        return this.atualizar(id, {
-
-            logo_url: logoUrl
+            return !!data;
 
         });
 
     }
 
     // ==================================================
-    // Alterar Status
+    // Criar
     // ==================================================
 
-    async alterarStatus(id, status) {
+    async criar(dados) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            status
+            return await empresaRepository.criar(dados);
 
         });
 
     }
 
     // ==================================================
-    // Empresa Ativa
+    // Atualizar
     // ==================================================
 
-    async empresaAtiva(id) {
+    async atualizar(id, dados) {
 
-        const result = await this.buscar(id);
+        return api.execute(async () => {
 
-        if (!result.success) {
+            return await empresaRepository.atualizar(id, dados);
 
-            return result;
+        });
 
-        }
+    }
 
-        return {
+    // ==================================================
+    // Excluir
+    // ==================================================
 
-            success: true,
+    async excluir(id) {
 
-            data: result.data.status === "ativo",
+        return api.execute(async () => {
 
-            error: null
+            return await empresaRepository.excluir(id);
 
-        };
+        });
 
     }
 
