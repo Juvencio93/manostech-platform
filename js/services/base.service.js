@@ -11,7 +11,7 @@ export default class BaseService {
     constructor(table) {
 
         if (!table) {
-            throw new Error("A tabela deve ser informada.");
+            throw new Error("Tabela não informada.");
         }
 
         this.table = table;
@@ -35,15 +35,22 @@ export default class BaseService {
     async listar({
         select = "*",
         orderBy = "created_at",
-        ascending = true
+        ascending = false,
+        limit = null
     } = {}) {
 
         return api.execute(async () => {
 
-            return await this
+            let query = this
                 .query()
                 .select(select)
                 .order(orderBy, { ascending });
+
+            if (limit) {
+                query = query.limit(limit);
+            }
+
+            return await query;
 
         });
 
@@ -68,7 +75,7 @@ export default class BaseService {
     }
 
     // ==================================================
-    // Buscar Um
+    // Buscar Primeiro
     // ==================================================
 
     async buscarUm(column, value, select = "*") {
@@ -86,17 +93,22 @@ export default class BaseService {
     }
 
     // ==================================================
-    // Buscar Vários
+    // Buscar Todos
     // ==================================================
 
-    async buscarTodos(column, value, select = "*") {
+    async buscarTodos(column, value, {
+        select = "*",
+        orderBy = "created_at",
+        ascending = false
+    } = {}) {
 
         return api.execute(async () => {
 
             return await this
                 .query()
                 .select(select)
-                .eq(column, value);
+                .eq(column, value)
+                .order(orderBy, { ascending });
 
         });
 
@@ -140,6 +152,24 @@ export default class BaseService {
     }
 
     // ==================================================
+    // Atualizar por Campo
+    // ==================================================
+
+    async atualizarPor(column, value, data) {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .update(data)
+                .eq(column, value)
+                .select();
+
+        });
+
+    }
+
+    // ==================================================
     // Excluir
     // ==================================================
 
@@ -160,15 +190,15 @@ export default class BaseService {
     // Contar
     // ==================================================
 
-    async contar(column = "*") {
+    async contar(column = "id") {
 
         return api.execute(async () => {
 
             return await this
                 .query()
                 .select(column, {
-                    count: "exact",
-                    head: true
+                    head: true,
+                    count: "exact"
                 });
 
         });
@@ -176,7 +206,27 @@ export default class BaseService {
     }
 
     // ==================================================
-    // Existe?
+    // Contar por Campo
+    // ==================================================
+
+    async contarPor(column, value) {
+
+        return api.execute(async () => {
+
+            return await this
+                .query()
+                .select("id", {
+                    head: true,
+                    count: "exact"
+                })
+                .eq(column, value);
+
+        });
+
+    }
+
+    // ==================================================
+    // Existe
     // ==================================================
 
     async existe(column, value) {
@@ -192,9 +242,7 @@ export default class BaseService {
         });
 
         if (!result.success) {
-
             return result;
-
         }
 
         return {
