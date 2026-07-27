@@ -1,51 +1,97 @@
-export const empresaService = {
-  async getAllEmpresas() {
-    try {
-      // TODO: Chamar API real
-      return [];
-    } catch (error) {
-      console.error('Erro ao carregar empresas:', error);
-      return [];
-    }
-  },
+// ======================================================
+// Manos Tech Platform
+// Empresa Service
+// ======================================================
 
-  async getEmpresa(id) {
-    try {
-      // TODO: Chamar API real
-      return null;
-    } catch (error) {
-      console.error('Erro ao carregar empresa:', error);
-      return null;
-    }
-  },
+import BaseService from "./base.service.js";
+import api from "../core/api.js";
+import { supabase } from "../core/supabase-client.js";
 
-  async createEmpresa(data) {
-    try {
-      // TODO: Chamar API real
-      return { success: true, id: Date.now() };
-    } catch (error) {
-      console.error('Erro ao criar empresa:', error);
-      return { success: false, error: error.message };
-    }
-  },
+class EmpresaService extends BaseService {
 
-  async updateEmpresa(id, data) {
-    try {
-      // TODO: Chamar API real
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao atualizar empresa:', error);
-      return { success: false, error: error.message };
-    }
-  },
+    constructor() {
 
-  async deleteEmpresa(id) {
-    try {
-      // TODO: Chamar API real
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao deletar empresa:', error);
-      return { success: false, error: error.message };
+        super("empresas");
+
     }
-  }
-};
+
+    // ==================================================
+    // Buscar por Slug
+    // ==================================================
+
+    async buscarPorSlug(slug) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from(this.table)
+                .select("*")
+                .eq("slug", slug)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Buscar por CNPJ
+    // ==================================================
+
+    async buscarPorCnpj(cnpj) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from(this.table)
+                .select("*")
+                .eq("cnpj", cnpj)
+                .single();
+
+        });
+
+    }
+
+    // ==================================================
+    // Empresas Ativas
+    // ==================================================
+
+    async listarAtivas() {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from(this.table)
+                .select("*")
+                .eq("status", "ativo")
+                .order("nome");
+
+        });
+
+    }
+
+    // ==================================================
+    // Atualizar Logo
+    // ==================================================
+
+    async atualizarLogo(id, logo_url) {
+
+        return api.execute(async () => {
+
+            return await supabase
+                .from(this.table)
+                .update({
+
+                    logo_url
+
+                })
+                .eq("id", id)
+                .select()
+                .single();
+
+        });
+
+    }
+
+}
+
+export default new EmpresaService();
