@@ -1,56 +1,163 @@
 // ======================================================
 // Manos Tech Platform
-// Storage
+// Storage Core
 // ======================================================
+
+import { supabase } from "./supabase-client.js";
 
 class Storage {
 
-    set(key, value) {
+    constructor() {
 
-        localStorage.setItem(key, JSON.stringify(value));
+        this.bucket = "manostech";
 
     }
 
-    get(key) {
+    // ==================================================
+    // Upload
+    // ==================================================
 
-        const value = localStorage.getItem(key);
+    async upload(caminho, arquivo, upsert = true) {
 
-        if (!value) {
-            return null;
+        const { data, error } = await supabase
+            .storage
+            .from(this.bucket)
+            .upload(caminho, arquivo, {
+
+                upsert
+
+            });
+
+        if (error) {
+
+            throw error;
+
         }
 
-        try {
+        return data;
 
-            return JSON.parse(value);
+    }
 
-        } catch {
+    // ==================================================
+    // Excluir
+    // ==================================================
 
-            return value;
+    async remove(caminho) {
+
+        const { data, error } = await supabase
+            .storage
+            .from(this.bucket)
+            .remove([caminho]);
+
+        if (error) {
+
+            throw error;
 
         }
 
-    }
-
-    remove(key) {
-
-        localStorage.removeItem(key);
+        return data;
 
     }
 
-    clear() {
+    // ==================================================
+    // URL Pública
+    // ==================================================
 
-        localStorage.clear();
+    getPublicUrl(caminho) {
+
+        return supabase
+            .storage
+            .from(this.bucket)
+            .getPublicUrl(caminho)
+            .data
+            .publicUrl;
 
     }
 
-    has(key) {
+    // ==================================================
+    // Download
+    // ==================================================
 
-        return localStorage.getItem(key) !== null;
+    async download(caminho) {
+
+        const { data, error } = await supabase
+            .storage
+            .from(this.bucket)
+            .download(caminho);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Listar Arquivos
+    // ==================================================
+
+    async listar(pasta = "") {
+
+        const { data, error } = await supabase
+            .storage
+            .from(this.bucket)
+            .list(pasta);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Mover Arquivo
+    // ==================================================
+
+    async mover(origem, destino) {
+
+        const { data, error } = await supabase
+            .storage
+            .from(this.bucket)
+            .move(origem, destino);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Copiar Arquivo
+    // ==================================================
+
+    async copiar(origem, destino) {
+
+        const { data, error } = await supabase
+            .storage
+            .from(this.bucket)
+            .copy(origem, destino);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return data;
 
     }
 
 }
 
-const storage = new Storage();
-
-export default storage;
+export default new Storage();
