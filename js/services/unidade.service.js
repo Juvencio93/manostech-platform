@@ -3,171 +3,172 @@
 // Unidade Service
 // ======================================================
 
-import BaseService from "./base.service.js";
 import api from "../core/api.js";
 import { supabase } from "../core/supabase-client.js";
 
-class UnidadeService extends BaseService {
+import unidadeRepository from "../repositories/unidade.repository.js";
 
-    constructor() {
-
-        super("unidades");
-
-    }
+class UnidadeService {
 
     // ==================================================
-    // Buscar Unidade
+    // Buscar
     // ==================================================
 
     async buscar(id) {
 
-        return super.buscar(id);
+        return api.execute(async () => {
+
+            return await unidadeRepository.buscar(id);
+
+        });
 
     }
 
     // ==================================================
-    // Listar por Empresa
+    // Listar
+    // ==================================================
+
+    async listar() {
+
+        return api.execute(async () => {
+
+            return await unidadeRepository.listar();
+
+        });
+
+    }
+
+    // ==================================================
+    // Empresa
     // ==================================================
 
     async listarPorEmpresa(empresaId) {
 
-        return this.buscarTodos(
+        return api.execute(async () => {
 
-            "empresa_id",
+            return await unidadeRepository.listarPorEmpresa(empresaId);
 
-            empresaId,
-
-            {
-
-                orderBy: "nome",
-                ascending: true
-
-            }
-
-        );
+        });
 
     }
 
     // ==================================================
-    // Buscar Unidade Principal
+    // Ativas
+    // ==================================================
+
+    async listarAtivas(empresaId) {
+
+        return api.execute(async () => {
+
+            return await unidadeRepository.listarAtivas(empresaId);
+
+        });
+
+    }
+
+    // ==================================================
+    // Principal
     // ==================================================
 
     async principal(empresaId) {
 
-        return this.buscarUm(
+        return api.execute(async () => {
 
-            "empresa_id",
+            return await unidadeRepository.principal(empresaId);
 
-            empresaId
-
-        );
+        });
 
     }
 
     // ==================================================
-    // Configurações da Unidade
+    // Configurações
     // ==================================================
 
     async configuracoes(unidadeId) {
 
         return api.execute(async () => {
 
-            return await supabase
+            const { data, error } = await supabase
                 .from("configuracoes")
                 .select("*")
                 .eq("unidade_id", unidadeId)
                 .single();
+
+            if (error) throw error;
+
+            return data;
 
         });
 
     }
 
     // ==================================================
-    // Portal Config
+    // Portal
     // ==================================================
 
     async portal(unidadeId) {
 
         return api.execute(async () => {
 
-            return await supabase
+            const { data, error } = await supabase
                 .from("portal_config")
                 .select("*")
                 .eq("unidade_id", unidadeId)
                 .single();
+
+            if (error) throw error;
+
+            return data;
 
         });
 
     }
 
     // ==================================================
-    // Dashboard Cache
+    // Dashboard
     // ==================================================
 
     async dashboard(unidadeId) {
 
         return api.execute(async () => {
 
-            return await supabase
+            const { data, error } = await supabase
                 .from("dashboard_cache")
                 .select("*")
                 .eq("unidade_id", unidadeId)
                 .single();
 
+            if (error) throw error;
+
+            return data;
+
         });
 
     }
 
     // ==================================================
-    // Arquivos
+    // Criar
     // ==================================================
 
-    async arquivos(unidadeId) {
+    async criar(dados) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from("arquivos")
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .order("created_at", {
-
-                    ascending: false
-
-                });
+            return await unidadeRepository.criar(dados);
 
         });
 
     }
 
     // ==================================================
-    // Campanhas
+    // Atualizar
     // ==================================================
 
-    async campanhas(unidadeId) {
+    async atualizar(id, dados) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from("campanhas")
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .eq("ativo", true)
-                .order("ordem");
-
-        });
-
-    }
-
-    // ==================================================
-    // Atualizar Logo
-    // ==================================================
-
-    async atualizarLogo(id, logoUrl) {
-
-        return this.atualizar(id, {
-
-            logo_url: logoUrl
+            return await unidadeRepository.atualizar(id, dados);
 
         });
 
@@ -179,9 +180,23 @@ class UnidadeService extends BaseService {
 
     async alterarStatus(id, status) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            status
+            return await unidadeRepository.alterarStatus(id, status);
+
+        });
+
+    }
+
+    // ==================================================
+    // Excluir
+    // ==================================================
+
+    async excluir(id) {
+
+        return api.execute(async () => {
+
+            return await unidadeRepository.excluir(id);
 
         });
 
