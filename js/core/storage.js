@@ -1,52 +1,56 @@
-// Storage gerenciado
-export const storage = {
-  set(key, value) {
-    try {
-      const serialized = JSON.stringify(value);
-      localStorage.setItem(key, serialized);
-      return true;
-    } catch (error) {
-      console.error('Erro ao salvar no storage:', error);
-      return false;
-    }
-  },
+// ======================================================
+// Manos Tech Platform
+// Storage
+// ======================================================
 
-  get(key) {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : null;
-    } catch (error) {
-      console.error('Erro ao obter do storage:', error);
-      return null;
-    }
-  },
+class Storage {
 
-  remove(key) {
-    try {
-      localStorage.removeItem(key);
-      return true;
-    } catch (error) {
-      console.error('Erro ao remover do storage:', error);
-      return false;
-    }
-  },
+    set(key, value) {
 
-  clear() {
-    try {
-      localStorage.clear();
-      return true;
-    } catch (error) {
-      console.error('Erro ao limpar storage:', error);
-      return false;
-    }
-  },
+        localStorage.setItem(key, JSON.stringify(value));
 
-  getAll() {
-    const items = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      items[key] = this.get(key);
     }
-    return items;
-  }
-};
+
+    get(key) {
+
+        const value = localStorage.getItem(key);
+
+        if (!value) {
+            return null;
+        }
+
+        try {
+
+            return JSON.parse(value);
+
+        } catch {
+
+            return value;
+
+        }
+
+    }
+
+    remove(key) {
+
+        localStorage.removeItem(key);
+
+    }
+
+    clear() {
+
+        localStorage.clear();
+
+    }
+
+    has(key) {
+
+        return localStorage.getItem(key) !== null;
+
+    }
+
+}
+
+const storage = new Storage();
+
+export default storage;
