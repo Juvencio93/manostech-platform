@@ -1,143 +1,38 @@
 // ======================================================
 // Manos Tech Platform
-// API
+// API Helper
 // ======================================================
-
-import { supabase } from "./supabase-client.js";
 
 class Api {
 
-    // ==================================================
-    // SELECT
-    // ==================================================
-
-    async select(table, query) {
+    /**
+     * Executa uma operação assíncrona e padroniza o retorno.
+     * @param {Function} callback
+     * @returns {Promise<{success:boolean,data:any,error:any}>}
+     */
+    async execute(callback) {
 
         try {
 
-            const { data, error } = await query(
-                supabase.from(table)
-            );
+            const result = await callback();
 
-            if (error) throw error;
+            if (result?.error) {
+                throw result.error;
+            }
 
             return {
                 success: true,
-                data,
+                data: result?.data ?? result,
                 error: null
             };
 
         } catch (error) {
 
-            console.error(error);
+            console.error("[API]", error);
 
             return {
                 success: false,
                 data: null,
-                error
-            };
-
-        }
-
-    }
-
-    // ==================================================
-    // INSERT
-    // ==================================================
-
-    async insert(table, values) {
-
-        try {
-
-            const { data, error } = await supabase
-                .from(table)
-                .insert(values)
-                .select();
-
-            if (error) throw error;
-
-            return {
-                success: true,
-                data,
-                error: null
-            };
-
-        } catch (error) {
-
-            console.error(error);
-
-            return {
-                success: false,
-                data: null,
-                error
-            };
-
-        }
-
-    }
-
-    // ==================================================
-    // UPDATE
-    // ==================================================
-
-    async update(table, values, column, value) {
-
-        try {
-
-            const { data, error } = await supabase
-                .from(table)
-                .update(values)
-                .eq(column, value)
-                .select();
-
-            if (error) throw error;
-
-            return {
-                success: true,
-                data,
-                error: null
-            };
-
-        } catch (error) {
-
-            console.error(error);
-
-            return {
-                success: false,
-                data: null,
-                error
-            };
-
-        }
-
-    }
-
-    // ==================================================
-    // DELETE
-    // ==================================================
-
-    async delete(table, column, value) {
-
-        try {
-
-            const { error } = await supabase
-                .from(table)
-                .delete()
-                .eq(column, value);
-
-            if (error) throw error;
-
-            return {
-                success: true,
-                error: null
-            };
-
-        } catch (error) {
-
-            console.error(error);
-
-            return {
-                success: false,
                 error
             };
 
