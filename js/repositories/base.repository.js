@@ -11,6 +11,9 @@ class BaseRepository {
 
         this.table = table;
 
+        // Instância compartilhada do Supabase
+        this.supabase = supabase;
+
     }
 
     // ==================================================
@@ -19,34 +22,7 @@ class BaseRepository {
 
     query() {
 
-        return supabase.from(this.table);
-
-    }
-
-    // ==================================================
-    // Listar
-    // ==================================================
-
-    async listar({
-
-        select = "*",
-
-        orderBy = "created_at",
-
-        ascending = false
-
-    } = {}) {
-
-        const { data, error } = await this
-            .query()
-            .select(select)
-            .order(orderBy, {
-                ascending
-            });
-
-        if (error) throw error;
-
-        return data;
+        return this.supabase.from(this.table);
 
     }
 
@@ -69,7 +45,7 @@ class BaseRepository {
     }
 
     // ==================================================
-    // Buscar Um Campo
+    // Buscar Um
     // ==================================================
 
     async buscarUm(campo, valor, select = "*") {
@@ -96,6 +72,31 @@ class BaseRepository {
             .query()
             .select(select)
             .eq(campo, valor);
+
+        if (error) throw error;
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Listar
+    // ==================================================
+
+    async listar({
+
+        select = "*",
+
+        orderBy = "created_at",
+
+        ascending = false
+
+    } = {}) {
+
+        const { data, error } = await this
+            .query()
+            .select(select)
+            .order(orderBy, { ascending });
 
         if (error) throw error;
 
@@ -147,23 +148,6 @@ class BaseRepository {
     }
 
     // ==================================================
-    // Upsert
-    // ==================================================
-
-    async salvar(dados) {
-
-        const { data, error } = await this
-            .query()
-            .upsert(dados)
-            .select();
-
-        if (error) throw error;
-
-        return data;
-
-    }
-
-    // ==================================================
     // Excluir
     // ==================================================
 
@@ -186,7 +170,7 @@ class BaseRepository {
 
     async desativar(id) {
 
-        return await this.atualizar(id, {
+        return this.atualizar(id, {
 
             ativo: false
 
@@ -194,13 +178,9 @@ class BaseRepository {
 
     }
 
-    // ==================================================
-    // Ativar
-    // ==================================================
-
     async ativar(id) {
 
-        return await this.atualizar(id, {
+        return this.atualizar(id, {
 
             ativo: true
 
@@ -235,9 +215,9 @@ class BaseRepository {
     // Contar
     // ==================================================
 
-    async contar() {
+    async contar(filtros = {}) {
 
-        const { count, error } = await this
+        let query = this
             .query()
             .select("id", {
 
@@ -247,6 +227,22 @@ class BaseRepository {
 
             });
 
+        Object.entries(filtros).forEach(([campo, valor]) => {
+
+            if (
+                valor !== undefined &&
+                valor !== null &&
+                valor !== ""
+            ) {
+
+                query = query.eq(campo, valor);
+
+            }
+
+        });
+
+        const { count, error } = await query;
+
         if (error) throw error;
 
         return count;
@@ -254,61 +250,7 @@ class BaseRepository {
     }
 
     // ==================================================
-    // Paginação
-    // ==================================================
-
-    async paginar({
-
-        pagina = 1,
-
-        limite = 20,
-
-        orderBy = "created_at",
-
-        ascending = false,
-
-        select = "*"
-
-    } = {}) {
-
-        const inicio = (pagina - 1) * limite;
-
-        const fim = inicio + limite - 1;
-
-        const { data, error, count } = await this
-            .query()
-            .select(select, {
-
-                count: "exact"
-
-            })
-            .order(orderBy, {
-
-                ascending
-
-            })
-            .range(inicio, fim);
-
-        if (error) throw error;
-
-        return {
-
-            dados: data,
-
-            total: count,
-
-            pagina,
-
-            limite,
-
-            paginas: Math.ceil(count / limite)
-
-        };
-
-    }
-
-    // ==================================================
-    // Busca Texto
+    // Pesquisa
     // ==================================================
 
     async pesquisar(campo, texto) {
@@ -325,14 +267,12 @@ class BaseRepository {
     }
 
     // ==================================================
-    // Filtro Dinâmico
+    // Filtros
     // ==================================================
 
     async filtrar(filtros = {}, options = {}) {
 
-        let query = this.query().select(
-            options.select || "*"
-        );
+        let query = this.query().select(options.select || "*");
 
         Object.entries(filtros).forEach(([campo, valor]) => {
 
@@ -351,11 +291,15 @@ class BaseRepository {
         if (options.orderBy) {
 
             query = query.order(
+
                 options.orderBy,
+
                 {
-                    ascending:
-                        options.ascending ?? false
+
+                    ascending: options.ascending ?? true
+
                 }
+
             );
 
         }
