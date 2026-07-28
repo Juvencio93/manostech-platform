@@ -3,143 +3,142 @@
 // Visitante Service
 // ======================================================
 
-import api from "../core/api.js";
+import http from "../core/http.js";
 import visitanteRepository from "../repositories/visitante.repository.js";
 
 class VisitanteService {
 
-    async buscar(id) {
-
-        return api.execute(async () => {
-
-            return await visitanteRepository.buscar(id);
-
-        });
-
-    }
+    // ==================================================
+    // Listar
+    // ==================================================
 
     async listar() {
 
-        return api.execute(async () => {
-
-            return await visitanteRepository.listar();
-
-        });
+        return await http.execute(() =>
+            visitanteRepository.listar()
+        );
 
     }
 
-    async listarPorUnidade(unidadeId) {
+    // ==================================================
+    // Buscar
+    // ==================================================
 
-        return api.execute(async () => {
+    async buscar(id) {
 
-            return await visitanteRepository.listarPorUnidade(unidadeId);
-
-        });
-
-    }
-
-    async buscarPorDocumento(documento) {
-
-        return api.execute(async () => {
-
-            return await visitanteRepository.buscarPorDocumento(documento);
-
-        });
+        return await http.execute(() =>
+            visitanteRepository.buscar(id)
+        );
 
     }
 
-    async buscarPorTelefone(telefone) {
+    // ==================================================
+    // Listar por Operação
+    // ==================================================
 
-        return api.execute(async () => {
+    async listarPorOperacao(operacaoId) {
 
-            return await visitanteRepository.buscarPorTelefone(telefone);
-
-        });
-
-    }
-
-    async buscarPorEmail(email) {
-
-        return api.execute(async () => {
-
-            return await visitanteRepository.buscarPorEmail(email);
-
-        });
+        return await http.execute(() =>
+            visitanteRepository.listarPorOperacao(
+                operacaoId
+            )
+        );
 
     }
 
-    async buscarPorNome(unidadeId, nome) {
+    // ==================================================
+    // Buscar WhatsApp
+    // ==================================================
 
-        return api.execute(async () => {
+    async buscarPorWhatsapp(operacaoId, whatsapp) {
 
-            return await visitanteRepository.buscarPorNome(
-                unidadeId,
-                nome
-            );
-
-        });
-
-    }
-
-    async total(unidadeId) {
-
-        return api.execute(async () => {
-
-            return await visitanteRepository.total(unidadeId);
-
-        });
+        return await http.execute(() =>
+            visitanteRepository.buscarPorWhatsapp(
+                operacaoId,
+                whatsapp
+            )
+        );
 
     }
 
-    async novosHoje(unidadeId) {
-
-        return api.execute(async () => {
-
-            return await visitanteRepository.novosHoje(unidadeId);
-
-        });
-
-    }
-
-    async clientesFrequentes(unidadeId) {
-
-        return api.execute(async () => {
-
-            return await visitanteRepository.clientesFrequentes(
-                unidadeId
-            );
-
-        });
-
-    }
+    // ==================================================
+    // Criar
+    // ==================================================
 
     async criar(dados) {
 
-        return api.execute(async () => {
-
-            return await visitanteRepository.criar(dados);
-
-        });
+        return await http.execute(() =>
+            visitanteRepository.criar(dados)
+        );
 
     }
+
+    // ==================================================
+    // Atualizar
+    // ==================================================
 
     async atualizar(id, dados) {
 
-        return api.execute(async () => {
-
-            return await visitanteRepository.atualizar(id, dados);
-
-        });
+        return await http.execute(() =>
+            visitanteRepository.atualizar(
+                id,
+                dados
+            )
+        );
 
     }
 
+    // ==================================================
+    // Desativar
+    // ==================================================
+
     async excluir(id) {
 
-        return api.execute(async () => {
+        return await http.execute(() =>
+            visitanteRepository.desativar(id)
+        );
 
-            return await visitanteRepository.excluir(id);
+    }
 
-        });
+    // ==================================================
+    // Dashboard
+    // ==================================================
+
+    async dashboard(operacaoId) {
+
+        return await http.execute(() =>
+            visitanteRepository.dashboard(
+                operacaoId
+            )
+        );
+
+    }
+
+    // ==================================================
+    // Novos Hoje
+    // ==================================================
+
+    async novosHoje(operacaoId) {
+
+        return await http.execute(() =>
+            visitanteRepository.novosHoje(
+                operacaoId
+            )
+        );
+
+    }
+
+    // ==================================================
+    // Recorrentes
+    // ==================================================
+
+    async recorrentes(operacaoId) {
+
+        return await http.execute(() =>
+            visitanteRepository.recorrentes(
+                operacaoId
+            )
+        );
 
     }
 
