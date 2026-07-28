@@ -3,226 +3,129 @@
 // Campanha Service
 // ======================================================
 
-import BaseService from "./base.service.js";
 import api from "../core/api.js";
-import { supabase } from "../core/supabase-client.js";
+import campanhaRepository from "../repositories/campanha.repository.js";
 
-class CampanhaService extends BaseService {
-
-    constructor() {
-
-        super("campanhas");
-
-    }
-
-    // ==================================================
-    // Campanhas da Unidade
-    // ==================================================
-
-    async listarPorUnidade(unidadeId) {
-
-        return this.buscarTodos(
-
-            "unidade_id",
-
-            unidadeId,
-
-            {
-
-                orderBy: "ordem",
-                ascending: true
-
-            }
-
-        );
-
-    }
-
-    // ==================================================
-    // Campanhas Ativas
-    // ==================================================
-
-    async listarAtivas(unidadeId) {
-
-        return api.execute(async () => {
-
-            return await this
-                .query()
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .eq("ativo", true)
-                .order("ordem");
-
-        });
-
-    }
-
-    // ==================================================
-    // Buscar Campanha
-    // ==================================================
+class CampanhaService {
 
     async buscar(id) {
 
-        return super.buscar(id);
-
-    }
-
-    // ==================================================
-    // Horários da Campanha
-    // ==================================================
-
-    async horarios(campanhaId) {
-
         return api.execute(async () => {
 
-            return await supabase
-                .from("campanhas_horarios")
-                .select("*")
-                .eq("campanha_id", campanhaId)
-                .eq("ativo", true);
+            return await campanhaRepository.buscar(id);
 
         });
 
     }
 
-    // ==================================================
-    // Criar Horário
-    // ==================================================
-
-    async adicionarHorario(dados) {
+    async listar() {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from("campanhas_horarios")
-                .insert(dados)
-                .select()
-                .single();
+            return await campanhaRepository.listar();
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Horário
-    // ==================================================
-
-    async atualizarHorario(id, dados) {
+    async listarPorOperacao(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from("campanhas_horarios")
-                .update(dados)
-                .eq("id", id)
-                .select()
-                .single();
+            return await campanhaRepository.listarPorOperacao(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Excluir Horário
-    // ==================================================
-
-    async excluirHorario(id) {
+    async listarAtivas(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from("campanhas_horarios")
-                .delete()
-                .eq("id", id);
+            return await campanhaRepository.listarAtivas(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Ativar Campanha
-    // ==================================================
+    async listarPorTipo(operacaoId, tipo) {
+
+        return api.execute(async () => {
+
+            return await campanhaRepository.listarPorTipo(
+                operacaoId,
+                tipo
+            );
+
+        });
+
+    }
+
+    async criar(dados) {
+
+        return api.execute(async () => {
+
+            return await campanhaRepository.criar(dados);
+
+        });
+
+    }
+
+    async atualizar(id, dados) {
+
+        return api.execute(async () => {
+
+            return await campanhaRepository.atualizar(
+                id,
+                dados
+            );
+
+        });
+
+    }
 
     async ativar(id) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            ativo: true
+            return await campanhaRepository.ativar(id);
 
         });
 
     }
-
-    // ==================================================
-    // Desativar Campanha
-    // ==================================================
 
     async desativar(id) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            ativo: false
+            return await campanhaRepository.desativar(id);
 
         });
 
     }
-
-    // ==================================================
-    // Reordenar
-    // ==================================================
 
     async alterarOrdem(id, ordem) {
 
-        return this.atualizar(id, {
+        return api.execute(async () => {
 
-            ordem
+            return await campanhaRepository.alterarOrdem(
+                id,
+                ordem
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Campanhas do Portal
-    // ==================================================
-
-    async portal(unidadeId) {
+    async excluir(id) {
 
         return api.execute(async () => {
 
-            const agora = new Date();
-
-            const horaAtual = agora.toTimeString().substring(0, 8);
-
-            const dias = [
-                "domingo",
-                "segunda",
-                "terca",
-                "quarta",
-                "quinta",
-                "sexta",
-                "sabado"
-            ];
-
-            const diaSemana = dias[agora.getDay()];
-
-            return await supabase
-                .from("campanhas")
-                .select(`
-                    *,
-                    campanhas_horarios (
-                        hora_inicio,
-                        hora_fim,
-                        domingo,
-                        segunda,
-                        terca,
-                        quarta,
-                        quinta,
-                        sexta,
-                        sabado
-                    )
-                `)
-                .eq("unidade_id", unidadeId)
-                .eq("ativo", true);
+            return await campanhaRepository.excluir(id);
 
         });
 
