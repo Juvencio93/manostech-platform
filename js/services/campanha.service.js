@@ -3,131 +3,178 @@
 // Campanha Service
 // ======================================================
 
-import api from "../core/api.js";
+import http from "../core/http.js";
 import campanhaRepository from "../repositories/campanha.repository.js";
 
 class CampanhaService {
 
-    async buscar(id) {
-
-        return api.execute(async () => {
-
-            return await campanhaRepository.buscar(id);
-
-        });
-
-    }
+    // ==================================================
+    // Listar
+    // ==================================================
 
     async listar() {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.listar();
-
-        });
+        return await http.execute(() =>
+            campanhaRepository.listar()
+        );
 
     }
+
+    // ==================================================
+    // Buscar
+    // ==================================================
+
+    async buscar(id) {
+
+        return await http.execute(() =>
+            campanhaRepository.buscar(id)
+        );
+
+    }
+
+    // ==================================================
+    // Buscar Completa
+    // ==================================================
+
+    async buscarCompleta(id) {
+
+        return await http.execute(() =>
+            campanhaRepository.buscarCompleta(id)
+        );
+
+    }
+
+    // ==================================================
+    // Operação
+    // ==================================================
 
     async listarPorOperacao(operacaoId) {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.listarPorOperacao(
+        return await http.execute(() =>
+            campanhaRepository.listarPorOperacao(
                 operacaoId
-            );
-
-        });
+            )
+        );
 
     }
+
+    // ==================================================
+    // Campanhas Ativas
+    // ==================================================
 
     async listarAtivas(operacaoId) {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.listarAtivas(
+        return await http.execute(() =>
+            campanhaRepository.listarAtivas(
                 operacaoId
-            );
+            )
+        );
 
-        });
+    }
+
+    // ==================================================
+    // Banner Principal
+    // ==================================================
+
+    async bannerPrincipal(operacaoId) {
+
+        return await http.execute(() =>
+            campanhaRepository.bannerPrincipal(
+                operacaoId
+            )
+        );
 
     }
 
-    async listarPorTipo(operacaoId, tipo) {
-
-        return api.execute(async () => {
-
-            return await campanhaRepository.listarPorTipo(
-                operacaoId,
-                tipo
-            );
-
-        });
-
-    }
+    // ==================================================
+    // Criar
+    // ==================================================
 
     async criar(dados) {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.criar(dados);
-
-        });
+        return await http.execute(() =>
+            campanhaRepository.criar(dados)
+        );
 
     }
+
+    // ==================================================
+    // Atualizar
+    // ==================================================
 
     async atualizar(id, dados) {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.atualizar(
+        return await http.execute(() =>
+            campanhaRepository.atualizar(
                 id,
                 dados
-            );
-
-        });
+            )
+        );
 
     }
+
+    // ==================================================
+    // Atualizar Ordem
+    // ==================================================
+
+    async atualizarOrdem(id, ordem) {
+
+        return await http.execute(() =>
+            campanhaRepository.atualizarOrdem(
+                id,
+                ordem
+            )
+        );
+
+    }
+
+    // ==================================================
+    // Ativar
+    // ==================================================
 
     async ativar(id) {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.ativar(id);
-
-        });
+        return await http.execute(() =>
+            campanhaRepository.ativar(id)
+        );
 
     }
+
+    // ==================================================
+    // Desativar
+    // ==================================================
 
     async desativar(id) {
 
-        return api.execute(async () => {
-
-            return await campanhaRepository.desativar(id);
-
-        });
+        return await http.execute(() =>
+            campanhaRepository.desativar(id)
+        );
 
     }
 
-    async alterarOrdem(id, ordem) {
-
-        return api.execute(async () => {
-
-            return await campanhaRepository.alterarOrdem(
-                id,
-                ordem
-            );
-
-        });
-
-    }
+    // ==================================================
+    // Excluir
+    // ==================================================
 
     async excluir(id) {
 
-        return api.execute(async () => {
+        return await http.execute(() =>
+            campanhaRepository.excluir(id)
+        );
 
-            return await campanhaRepository.excluir(id);
+    }
 
-        });
+    // ==================================================
+    // Dashboard
+    // ==================================================
+
+    async dashboard(operacaoId) {
+
+        return await http.execute(() =>
+            campanhaRepository.dashboard(
+                operacaoId
+            )
+        );
 
     }
 
