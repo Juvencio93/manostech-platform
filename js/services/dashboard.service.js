@@ -3,93 +3,124 @@
 // Dashboard Service
 // ======================================================
 
-import api from "../core/api.js";
+import http from "../core/http.js";
 import dashboardRepository from "../repositories/dashboard.repository.js";
 
 class DashboardService {
 
+    // ==================================================
+    // Dashboard Geral
+    // ==================================================
+
+    async obterDashboard(operacaoId) {
+
+        return await http.execute(() =>
+            dashboardRepository.obterDashboard(
+                operacaoId
+            )
+        );
+
+    }
+
+    // ==================================================
+    // Atualizar
+    // ==================================================
+
+    async atualizar(operacaoId) {
+
+        return await this.obterDashboard(
+            operacaoId
+        );
+
+    }
+
+    // ==================================================
+    // KPIs
+    // ==================================================
+
+    async kpis(operacaoId) {
+
+        const response = await this.obterDashboard(
+            operacaoId
+        );
+
+        if (!response.success) {
+
+            return response;
+
+        }
+
+        const dados = response.data;
+
+        return {
+
+            success: true,
+
+            data: {
+
+                visitantes: dados.visitantes,
+
+                acessos: dados.acessos,
+
+                campanhas: dados.campanhas,
+
+                dispositivos: dados.dispositivos
+
+            }
+
+        };
+
+    }
+
+    // ==================================================
+    // Portal
+    // ==================================================
+
+    async portal(operacaoId) {
+
+        const response = await this.obterDashboard(
+            operacaoId
+        );
+
+        if (!response.success) {
+
+            return response;
+
+        }
+
+        return {
+
+            success: true,
+
+            data: response.data.portal
+
+        };
+
+    }
+
+    // ==================================================
+    // Cache
+    // ==================================================
+
     async cache(operacaoId) {
 
-        return api.execute(async () => {
+        const response = await this.obterDashboard(
+            operacaoId
+        );
 
-            return await dashboardRepository.cache(
-                operacaoId
-            );
+        if (!response.success) {
 
-        });
+            return response;
 
-    }
+        }
 
-    async atualizarCache(operacaoId, dados) {
+        return {
 
-        return api.execute(async () => {
+            success: true,
 
-            return await dashboardRepository.atualizarCache(
-                operacaoId,
-                dados
-            );
+            data: response.data.cache
 
-        });
-
-    }
-
-    async periodoAtivo(operacaoId) {
-
-        return api.execute(async () => {
-
-            return await dashboardRepository.periodoAtivo(
-                operacaoId
-            );
-
-        });
-
-    }
-
-    async fluxoDiario(operacaoId) {
-
-        return api.execute(async () => {
-
-            return await dashboardRepository.fluxoDiario(
-                operacaoId
-            );
-
-        });
-
-    }
-
-    async acessosPorHora(operacaoId) {
-
-        return api.execute(async () => {
-
-            return await dashboardRepository.acessosPorHora(
-                operacaoId
-            );
-
-        });
-
-    }
-
-    async clientesFrequentes(operacaoId) {
-
-        return api.execute(async () => {
-
-            return await dashboardRepository.clientesFrequentes(
-                operacaoId
-            );
-
-        });
-
-    }
-
-    async picoMovimento(operacaoId) {
-
-        return api.execute(async () => {
-
-            return await dashboardRepository.picoMovimento(
-                operacaoId
-            );
-
-        });
+        };
 
     }
 
