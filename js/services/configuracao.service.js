@@ -3,211 +3,144 @@
 // Configuração Service
 // ======================================================
 
-import BaseService from "./base.service.js";
 import api from "../core/api.js";
-import { supabase } from "../core/supabase-client.js";
+import configuracaoRepository from "../repositories/configuracao.repository.js";
 
-class ConfiguracaoService extends BaseService {
+class ConfiguracaoService {
 
-    constructor() {
-
-        super("configuracoes");
-
-    }
-
-    // ==================================================
-    // Buscar Configuração da Unidade
-    // ==================================================
-
-    async buscarPorUnidade(unidadeId) {
+    async buscar(id) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .single();
+            return await configuracaoRepository.buscar(id);
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Horário de Reinício
-    // ==================================================
-
-    async atualizarHorarioReinicio(unidadeId, horario) {
+    async buscarPorOperacao(operacaoId) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
-
-                    horario_reinicio: horario,
-                    updated_at: new Date().toISOString()
-
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+            return await configuracaoRepository.buscarPorOperacao(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Política de Retenção
-    // ==================================================
-
-    async atualizarRetencao(unidadeId, dias) {
+    async criar(dados) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
-
-                    dias_retencao: dias,
-                    updated_at: new Date().toISOString()
-
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+            return await configuracaoRepository.criar(
+                dados
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Idioma
-    // ==================================================
-
-    async atualizarIdioma(unidadeId, idioma) {
+    async atualizar(id, dados) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
-
-                    idioma,
-                    updated_at: new Date().toISOString()
-
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+            return await configuracaoRepository.atualizar(
+                id,
+                dados
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Timezone
-    // ==================================================
-
-    async atualizarTimezone(unidadeId, timezone) {
+    async atualizarConfiguracao(operacaoId, dados) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
-
-                    timezone,
-                    updated_at: new Date().toISOString()
-
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+            return await configuracaoRepository.atualizarConfiguracao(
+                operacaoId,
+                dados
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Relatórios Automáticos
-    // ==================================================
-
-    async atualizarRelatorios(unidadeId, envioAutomatico, emailRelatorio) {
+    async atualizarHorarioReinicio(operacaoId, horario) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
-
-                    envio_automatico: envioAutomatico,
-                    email_relatorio: emailRelatorio,
-                    updated_at: new Date().toISOString()
-
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+            return await configuracaoRepository.atualizarHorarioReinicio(
+                operacaoId,
+                horario
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Atualizar Configuração Completa
-    // ==================================================
-
-    async salvar(unidadeId, dados) {
+    async atualizarRetencao(operacaoId, dias) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
-
-                    ...dados,
-                    updated_at: new Date().toISOString()
-
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+            return await configuracaoRepository.atualizarRetencao(
+                operacaoId,
+                dias
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Restaurar Configuração Padrão
-    // ==================================================
-
-    async restaurarPadrao(unidadeId) {
+    async atualizarIdioma(operacaoId, idioma) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .update({
+            return await configuracaoRepository.atualizarIdioma(
+                operacaoId,
+                idioma
+            );
 
-                    horario_reinicio: "03:00",
+        });
 
-                    dias_retencao: 90,
+    }
 
-                    envio_automatico: false,
+    async atualizarTimezone(operacaoId, timezone) {
 
-                    email_relatorio: null,
+        return api.execute(async () => {
 
-                    idioma: "pt-BR",
+            return await configuracaoRepository.atualizarTimezone(
+                operacaoId,
+                timezone
+            );
 
-                    timezone: "America/Sao_Paulo",
+        });
 
-                    updated_at: new Date().toISOString()
+    }
 
-                })
-                .eq("unidade_id", unidadeId)
-                .select()
-                .single();
+    async atualizarEmailRelatorio(operacaoId, email) {
+
+        return api.execute(async () => {
+
+            return await configuracaoRepository.atualizarEmailRelatorio(
+                operacaoId,
+                email
+            );
+
+        });
+
+    }
+
+    async atualizarEnvioAutomatico(operacaoId, ativo) {
+
+        return api.execute(async () => {
+
+            return await configuracaoRepository.atualizarEnvioAutomatico(
+                operacaoId,
+                ativo
+            );
 
         });
 
