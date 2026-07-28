@@ -1,14 +1,13 @@
 // ======================================================
 // Manos Tech Platform
-// Unidade Service
+// Operacao Service
 // ======================================================
 
 import api from "../core/api.js";
-import { supabase } from "../core/supabase-client.js";
 
-import unidadeRepository from "../repositories/unidade.repository.js";
+import operacaoRepository from "../repositories/operacao.repository.js";
 
-class UnidadeService {
+class OperacaoService {
 
     // ==================================================
     // Buscar
@@ -18,7 +17,7 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.buscar(id);
+            return await operacaoRepository.buscar(id);
 
         });
 
@@ -32,7 +31,7 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.listar();
+            return await operacaoRepository.listar();
 
         });
 
@@ -46,7 +45,74 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.listarPorEmpresa(empresaId);
+            return await operacaoRepository.listarPorEmpresa(
+                empresaId
+            );
+
+        });
+
+    }
+
+    // ==================================================
+    // Empresas
+    // ==================================================
+
+    async empresas(empresaId) {
+
+        return api.execute(async () => {
+
+            return await operacaoRepository.empresas(
+                empresaId
+            );
+
+        });
+
+    }
+
+    // ==================================================
+    // Filiais
+    // ==================================================
+
+    async filiais(empresaId) {
+
+        return api.execute(async () => {
+
+            return await operacaoRepository.filiais(
+                empresaId
+            );
+
+        });
+
+    }
+
+    // ==================================================
+    // Eventos
+    // ==================================================
+
+    async eventos(empresaId) {
+
+        return api.execute(async () => {
+
+            return await operacaoRepository.eventos(
+                empresaId
+            );
+
+        });
+
+    }
+
+    // ==================================================
+    // Buscar por Tipo
+    // ==================================================
+
+    async listarPorTipo(empresaId, tipo) {
+
+        return api.execute(async () => {
+
+            return await operacaoRepository.listarPorTipo(
+                empresaId,
+                tipo
+            );
 
         });
 
@@ -60,87 +126,26 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.listarAtivas(empresaId);
+            return await operacaoRepository.listarAtivas(
+                empresaId
+            );
 
         });
 
     }
 
     // ==================================================
-    // Principal
+    // Buscar por Nome
     // ==================================================
 
-    async principal(empresaId) {
+    async buscarPorNome(empresaId, nome) {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.principal(empresaId);
-
-        });
-
-    }
-
-    // ==================================================
-    // Configurações
-    // ==================================================
-
-    async configuracoes(unidadeId) {
-
-        return api.execute(async () => {
-
-            const { data, error } = await supabase
-                .from("configuracoes")
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .single();
-
-            if (error) throw error;
-
-            return data;
-
-        });
-
-    }
-
-    // ==================================================
-    // Portal
-    // ==================================================
-
-    async portal(unidadeId) {
-
-        return api.execute(async () => {
-
-            const { data, error } = await supabase
-                .from("portal_config")
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .single();
-
-            if (error) throw error;
-
-            return data;
-
-        });
-
-    }
-
-    // ==================================================
-    // Dashboard
-    // ==================================================
-
-    async dashboard(unidadeId) {
-
-        return api.execute(async () => {
-
-            const { data, error } = await supabase
-                .from("dashboard_cache")
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .single();
-
-            if (error) throw error;
-
-            return data;
+            return await operacaoRepository.buscarPorNome(
+                empresaId,
+                nome
+            );
 
         });
 
@@ -154,7 +159,7 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.criar(dados);
+            return await operacaoRepository.criar(dados);
 
         });
 
@@ -168,21 +173,10 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.atualizar(id, dados);
-
-        });
-
-    }
-
-    // ==================================================
-    // Alterar Status
-    // ==================================================
-
-    async alterarStatus(id, status) {
-
-        return api.execute(async () => {
-
-            return await unidadeRepository.alterarStatus(id, status);
+            return await operacaoRepository.atualizar(
+                id,
+                dados
+            );
 
         });
 
@@ -196,7 +190,7 @@ class UnidadeService {
 
         return api.execute(async () => {
 
-            return await unidadeRepository.excluir(id);
+            return await operacaoRepository.excluir(id);
 
         });
 
@@ -204,4 +198,4 @@ class UnidadeService {
 
 }
 
-export default new UnidadeService();
+export default new OperacaoService();
