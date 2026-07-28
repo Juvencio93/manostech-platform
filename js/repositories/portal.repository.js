@@ -14,23 +14,38 @@ class PortalRepository extends BaseRepository {
     }
 
     // ==================================================
-    // Buscar Portal da Operação
+    // Configuração da Operação
     // ==================================================
 
     async buscarPorOperacao(operacaoId) {
 
-        return await this.buscarUm(
-            "unidade_id",
-            operacaoId
-        );
+        const { data, error } = await this
+            .query()
+            .select(`
+                *,
+                unidades(
+                    id,
+                    nome,
+                    tipo,
+                    logo_url,
+                    link_redirecionamento,
+                    ativo
+                )
+            `)
+            .eq("unidade_id", operacaoId)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        return data;
 
     }
 
     // ==================================================
-    // Buscar Portal Ativo
+    // Portal Ativo
     // ==================================================
 
-    async buscarAtivo(operacaoId) {
+    async buscarPortalAtivo(operacaoId) {
 
         const { data, error } = await this
             .query()
@@ -46,68 +61,78 @@ class PortalRepository extends BaseRepository {
     }
 
     // ==================================================
-    // Ativar Portal
+    // Atualizar Configuração
     // ==================================================
 
-    async ativar(operacaoId) {
+    async salvarConfiguracao(operacaoId, dados) {
 
-        const { data, error } = await this
-            .query()
-            .update({
-                ativo: true,
-                updated_at: new Date().toISOString()
-            })
-            .eq("unidade_id", operacaoId)
-            .select()
-            .single();
+        const portal = await this.buscarPorOperacao(operacaoId);
 
-        if (error) throw error;
+        if (portal) {
 
-        return data;
+            return await this.atualizar(portal.id, dados);
+
+        }
+
+        return await this.criar({
+
+            unidade_id: operacaoId,
+
+            ...dados,
+
+            ativo: true
+
+        });
 
     }
 
     // ==================================================
-    // Desativar Portal
+    // Ativar
     // ==================================================
 
-    async desativar(operacaoId) {
+    async ativar(id) {
 
-        const { data, error } = await this
-            .query()
-            .update({
-                ativo: false,
-                updated_at: new Date().toISOString()
-            })
-            .eq("unidade_id", operacaoId)
-            .select()
-            .single();
+        return await this.atualizar(id, {
 
-        if (error) throw error;
+            ativo: true
 
-        return data;
+        });
 
     }
 
     // ==================================================
-    // Atualizar Layout
+    // Desativar
     // ==================================================
 
-    async atualizarLayout(operacaoId, dados) {
+    async desativar(id) {
 
-        const { data, error } = await this
-            .query()
-            .update({
-                ...dados,
-                updated_at: new Date().toISOString()
-            })
-            .eq("unidade_id", operacaoId)
-            .select()
-            .single();
+        return await this.atualizar(id, {
 
-        if (error) throw error;
+            ativo: false
 
-        return data;
+        });
+
+    }
+
+    // ==================================================
+    // Dashboard
+    // ==================================================
+
+    async dashboard(operacaoId) {
+
+        const portal = await this.buscarPortalAtivo(
+
+            operacaoId
+
+        );
+
+        return {
+
+            configurado: !!portal,
+
+            portal
+
+        };
 
     }
 
