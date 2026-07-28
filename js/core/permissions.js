@@ -3,82 +3,182 @@
 // Permissions
 // ======================================================
 
+import session from "./session.js";
+
 class Permissions {
 
     constructor() {
 
-        this.permissions = [];
+        this.niveis = {
+
+            MASTER: 100,
+            ADMIN: 90,
+            GERENTE: 70,
+            OPERADOR: 50,
+            VISUALIZADOR: 10
+
+        };
 
     }
 
     // ==================================================
-    // Define as permissões do usuário
+    // Usuário
     // ==================================================
 
-    set(permissions = []) {
+    usuario() {
 
-        this.permissions = Array.isArray(permissions)
-            ? permissions
-            : [];
+        return session.usuario();
 
     }
 
     // ==================================================
-    // Retorna todas as permissões
+    // Nível
     // ==================================================
 
-    get() {
+    nivel() {
 
-        return this.permissions;
+        return this.usuario()?.nivel ?? "VISUALIZADOR";
+
+    }
+
+    valorNivel() {
+
+        return this.niveis[this.nivel()] ?? 0;
 
     }
 
     // ==================================================
-    // Verifica uma permissão
+    // Comparação
     // ==================================================
 
-    has(permission) {
+    pode(minimo) {
 
-        return this.permissions.includes(permission);
+        return this.valorNivel() >= (this.niveis[minimo] ?? 0);
+
+    }
+
+    isMaster() {
+
+        return this.nivel() === "MASTER";
+
+    }
+
+    isAdmin() {
+
+        return this.pode("ADMIN");
+
+    }
+
+    isGerente() {
+
+        return this.pode("GERENTE");
+
+    }
+
+    isOperador() {
+
+        return this.pode("OPERADOR");
 
     }
 
     // ==================================================
-    // Verifica se possui todas
+    // Menus
     // ==================================================
 
-    hasAll(permissions = []) {
+    menuDashboard() {
 
-        return permissions.every(permission =>
-            this.permissions.includes(permission)
-        );
+        return this.pode("OPERADOR");
+
+    }
+
+    menuEmpresas() {
+
+        return this.pode("ADMIN");
+
+    }
+
+    menuOperacoes() {
+
+        return this.pode("OPERADOR");
+
+    }
+
+    menuPortal() {
+
+        return this.pode("OPERADOR");
+
+    }
+
+    menuVisitantes() {
+
+        return this.pode("OPERADOR");
+
+    }
+
+    menuCampanhas() {
+
+        return this.pode("GERENTE");
+
+    }
+
+    menuRelatorios() {
+
+        return this.pode("GERENTE");
+
+    }
+
+    menuFinanceiro() {
+
+        return this.pode("ADMIN");
+
+    }
+
+    menuConfiguracoes() {
+
+        return this.pode("ADMIN");
+
+    }
+
+    menuUsuarios() {
+
+        return this.pode("ADMIN");
 
     }
 
     // ==================================================
-    // Verifica se possui pelo menos uma
+    // Ações
     // ==================================================
 
-    hasAny(permissions = []) {
+    podeCriar() {
 
-        return permissions.some(permission =>
-            this.permissions.includes(permission)
-        );
+        return this.pode("OPERADOR");
 
     }
 
-    // ==================================================
-    // Limpa permissões
-    // ==================================================
+    podeEditar() {
 
-    clear() {
+        return this.pode("OPERADOR");
 
-        this.permissions = [];
+    }
+
+    podeExcluir() {
+
+        return this.pode("ADMIN");
+
+    }
+
+    podeFinanceiro() {
+
+        return this.pode("ADMIN");
+
+    }
+
+    podeAdministrar() {
+
+        return this.pode("MASTER");
 
     }
 
 }
 
-const permissions = new Permissions();
-
-export default permissions;
+export default new Permissions();
