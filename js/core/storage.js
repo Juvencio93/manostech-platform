@@ -1,160 +1,197 @@
 // ======================================================
 // Manos Tech Platform
-// Storage Core
+// Storage
 // ======================================================
-
-import { supabase } from "./supabase-client.js";
 
 class Storage {
 
     constructor() {
 
-        this.bucket = "manostech";
+        this.prefix = "manostech";
 
     }
 
     // ==================================================
-    // Upload
+    // Chave
     // ==================================================
 
-    async upload(caminho, arquivo, upsert = true) {
+    key(chave) {
 
-        const { data, error } = await supabase
-            .storage
-            .from(this.bucket)
-            .upload(caminho, arquivo, {
+        return `${this.prefix}:${chave}`;
 
-                upsert
+    }
 
-            });
+    // ==================================================
+    // Local Storage
+    // ==================================================
 
-        if (error) {
+    set(chave, valor) {
 
-            throw error;
+        localStorage.setItem(
+            this.key(chave),
+            JSON.stringify(valor)
+        );
+
+    }
+
+    get(chave, padrao = null) {
+
+        const valor = localStorage.getItem(
+            this.key(chave)
+        );
+
+        if (!valor) {
+
+            return padrao;
 
         }
 
-        return data;
+        try {
 
-    }
-
-    // ==================================================
-    // Excluir
-    // ==================================================
-
-    async remove(caminho) {
-
-        const { data, error } = await supabase
-            .storage
-            .from(this.bucket)
-            .remove([caminho]);
-
-        if (error) {
-
-            throw error;
+            return JSON.parse(valor);
 
         }
 
-        return data;
+        catch {
 
-    }
-
-    // ==================================================
-    // URL Pública
-    // ==================================================
-
-    getPublicUrl(caminho) {
-
-        return supabase
-            .storage
-            .from(this.bucket)
-            .getPublicUrl(caminho)
-            .data
-            .publicUrl;
-
-    }
-
-    // ==================================================
-    // Download
-    // ==================================================
-
-    async download(caminho) {
-
-        const { data, error } = await supabase
-            .storage
-            .from(this.bucket)
-            .download(caminho);
-
-        if (error) {
-
-            throw error;
+            return padrao;
 
         }
 
-        return data;
+    }
+
+    remove(chave) {
+
+        localStorage.removeItem(
+            this.key(chave)
+        );
+
+    }
+
+    clear() {
+
+        Object.keys(localStorage).forEach((item) => {
+
+            if (item.startsWith(this.prefix + ":")) {
+
+                localStorage.removeItem(item);
+
+            }
+
+        });
 
     }
 
     // ==================================================
-    // Listar Arquivos
+    // Session Storage
     // ==================================================
 
-    async listar(pasta = "") {
+    sessionSet(chave, valor) {
 
-        const { data, error } = await supabase
-            .storage
-            .from(this.bucket)
-            .list(pasta);
+        sessionStorage.setItem(
+            this.key(chave),
+            JSON.stringify(valor)
+        );
 
-        if (error) {
+    }
 
-            throw error;
+    sessionGet(chave, padrao = null) {
+
+        const valor = sessionStorage.getItem(
+            this.key(chave)
+        );
+
+        if (!valor) {
+
+            return padrao;
 
         }
 
-        return data;
+        try {
+
+            return JSON.parse(valor);
+
+        }
+
+        catch {
+
+            return padrao;
+
+        }
+
+    }
+
+    sessionRemove(chave) {
+
+        sessionStorage.removeItem(
+            this.key(chave)
+        );
+
+    }
+
+    sessionClear() {
+
+        Object.keys(sessionStorage).forEach((item) => {
+
+            if (item.startsWith(this.prefix + ":")) {
+
+                sessionStorage.removeItem(item);
+
+            }
+
+        });
 
     }
 
     // ==================================================
-    // Mover Arquivo
+    // Utilitários
     // ==================================================
 
-    async mover(origem, destino) {
+    exists(chave) {
 
-        const { data, error } = await supabase
-            .storage
-            .from(this.bucket)
-            .move(origem, destino);
+        return localStorage.getItem(
+            this.key(chave)
+        ) !== null;
 
-        if (error) {
+    }
 
-            throw error;
+    sessionExists(chave) {
 
-        }
-
-        return data;
+        return sessionStorage.getItem(
+            this.key(chave)
+        ) !== null;
 
     }
 
     // ==================================================
-    // Copiar Arquivo
+    // Atualizar objeto
     // ==================================================
 
-    async copiar(origem, destino) {
+    merge(chave, dados) {
 
-        const { data, error } = await supabase
-            .storage
-            .from(this.bucket)
-            .copy(origem, destino);
+        const atual = this.get(chave, {});
 
-        if (error) {
+        this.set(chave, {
 
-            throw error;
+            ...atual,
 
-        }
+            ...dados
 
-        return data;
+        });
+
+    }
+
+    sessionMerge(chave, dados) {
+
+        const atual = this.sessionGet(chave, {});
+
+        this.sessionSet(chave, {
+
+            ...atual,
+
+            ...dados
+
+        });
 
     }
 
