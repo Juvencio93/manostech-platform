@@ -3,257 +3,76 @@
 // Arquivo Service
 // ======================================================
 
-import BaseService from "./base.service.js";
 import api from "../core/api.js";
-import { supabase } from "../core/supabase-client.js";
+import arquivoRepository from "../repositories/arquivo.repository.js";
 
-class ArquivoService extends BaseService {
+class ArquivoService {
 
-    constructor() {
-
-        super("arquivos");
-
-        this.bucket = "manostech";
-
-    }
-
-    // ==================================================
-    // Upload
-    // ==================================================
-
-    async upload({
-
-        unidadeId,
-
-        arquivo,
-
-        tipo,
-
-        referencia
-
-    }) {
+    async listarPorOperacao(operacaoId) {
 
         return api.execute(async () => {
 
-            const extensao = arquivo.name.split(".").pop();
-
-            const nomeArquivo = `${crypto.randomUUID()}.${extensao}`;
-
-            const caminho = `${unidadeId}/${tipo}/${nomeArquivo}`;
-
-            const upload = await supabase
-                .storage
-                .from(this.bucket)
-                .upload(caminho, arquivo, {
-
-                    upsert: true
-
-                });
-
-            if (upload.error) {
-
-                throw upload.error;
-
-            }
-
-            const {
-
-                data: publicUrl
-
-            } = supabase
-                .storage
-                .from(this.bucket)
-                .getPublicUrl(caminho);
-
-            return await this.criar({
-
-                unidade_id: unidadeId,
-
-                tipo,
-
-                referencia,
-
-                arquivo_url: publicUrl.publicUrl,
-
-                tamanho: arquivo.size
-
-            });
+            return await arquivoRepository.listarPorOperacao(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Excluir
-    // ==================================================
-
-    async excluirArquivo(id) {
+    async listarPorTipo(operacaoId, tipo) {
 
         return api.execute(async () => {
 
-            const registro = await this.buscar(id);
-
-            if (!registro.success) {
-
-                throw new Error("Arquivo não encontrado.");
-
-            }
-
-            const url = registro.data.arquivo_url;
-
-            const bucketIndex = url.indexOf("/object/public/");
-
-            if (bucketIndex !== -1) {
-
-                const caminho = url
-                    .split("/object/public/")[1]
-                    .replace(`${this.bucket}/`, "");
-
-                await supabase
-                    .storage
-                    .from(this.bucket)
-                    .remove([caminho]);
-
-            }
-
-            return await this.excluir(id);
+            return await arquivoRepository.listarPorTipo(
+                operacaoId,
+                tipo
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Buscar Arquivos
-    // ==================================================
-
-    async listarPorUnidade(unidadeId) {
-
-        return this.buscarTodos(
-
-            "unidade_id",
-
-            unidadeId,
-
-            {
-
-                orderBy: "created_at",
-
-                ascending: false
-
-            }
-
-        );
-
-    }
-
-    // ==================================================
-    // Buscar por Tipo
-    // ==================================================
-
-    async listarPorTipo(unidadeId, tipo) {
+    async upload(path, file) {
 
         return api.execute(async () => {
 
-            return await this
-                .query()
-                .select("*")
-                .eq("unidade_id", unidadeId)
-                .eq("tipo", tipo)
-                .order("created_at", {
-
-                    ascending: false
-
-                });
+            return await arquivoRepository.upload(
+                path,
+                file
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Buscar por Referência
-    // ==================================================
+    obterUrl(path) {
 
-    async listarPorReferencia(referencia) {
-
-        return this.buscarTodos(
-
-            "referencia",
-
-            referencia,
-
-            {
-
-                orderBy: "created_at",
-
-                ascending: false
-
-            }
-
-        );
+        return arquivoRepository.obterUrl(path);
 
     }
 
-    // ==================================================
-    // Logos
-    // ==================================================
+    async salvarRegistro(dados) {
 
-    async logos(unidadeId) {
+        return api.execute(async () => {
 
-        return this.listarPorTipo(
+            return await arquivoRepository.salvarRegistro(
+                dados
+            );
 
-            unidadeId,
-
-            "logo"
-
-        );
+        });
 
     }
 
-    // ==================================================
-    // Banners
-    // ==================================================
+    async removerArquivo(path) {
 
-    async banners(unidadeId) {
+        return api.execute(async () => {
 
-        return this.listarPorTipo(
+            return await arquivoRepository.removerArquivo(
+                path
+            );
 
-            unidadeId,
-
-            "banner"
-
-        );
-
-    }
-
-    // ==================================================
-    // Promoções
-    // ==================================================
-
-    async promocoes(unidadeId) {
-
-        return this.listarPorTipo(
-
-            unidadeId,
-
-            "promocao"
-
-        );
-
-    }
-
-    // ==================================================
-    // Relatórios
-    // ==================================================
-
-    async relatorios(unidadeId) {
-
-        return this.listarPorTipo(
-
-            unidadeId,
-
-            "relatorio"
-
-        );
+        });
 
     }
 
