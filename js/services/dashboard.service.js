@@ -4,129 +4,90 @@
 // ======================================================
 
 import api from "../core/api.js";
-import { supabase } from "../core/supabase-client.js";
+import dashboardRepository from "../repositories/dashboard.repository.js";
 
 class DashboardService {
 
-    constructor() {
-
-        this.dashboardView = "vw_dashboard";
-        this.acessosHoraView = "vw_acessos_hora";
-        this.acessosDiaView = "vw_acessos_dia";
-        this.rankingView = "vw_ranking_visitantes";
-
-    }
-
-    // ==================================================
-    // Dashboard da Loja
-    // ==================================================
-
-    async dashboardLoja(lojaId) {
+    async cache(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.dashboardView)
-                .select("*")
-                .eq("loja_id", lojaId)
-                .single();
+            return await dashboardRepository.cache(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Dashboard do Evento
-    // ==================================================
-
-    async dashboardEvento(eventoId) {
+    async atualizarCache(operacaoId, dados) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.dashboardView)
-                .select("*")
-                .eq("evento_id", eventoId)
-                .single();
+            return await dashboardRepository.atualizarCache(
+                operacaoId,
+                dados
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Acessos por Hora
-    // ==================================================
-
-    async acessosPorHora(lojaId) {
+    async periodoAtivo(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.acessosHoraView)
-                .select("*")
-                .eq("loja_id", lojaId)
-                .order("hora");
+            return await dashboardRepository.periodoAtivo(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Acessos por Dia
-    // ==================================================
-
-    async acessosPorDia(lojaId) {
+    async fluxoDiario(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.acessosDiaView)
-                .select("*")
-                .eq("loja_id", lojaId)
-                .order("data");
+            return await dashboardRepository.fluxoDiario(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Ranking de Visitantes
-    // ==================================================
-
-    async rankingVisitantes(lojaId, limite = 20) {
+    async acessosPorHora(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.rankingView)
-                .select("*")
-                .eq("loja_id", lojaId)
-                .limit(limite);
+            return await dashboardRepository.acessosPorHora(
+                operacaoId
+            );
 
         });
 
     }
 
-    // ==================================================
-    // Resumo Geral
-    // ==================================================
-
-    async resumo(lojaId) {
+    async clientesFrequentes(operacaoId) {
 
         return api.execute(async () => {
 
-            return await supabase
-                .from(this.dashboardView)
-                .select(`
-                    total_visitantes,
-                    conectados_agora,
-                    novos_clientes,
-                    clientes_recorrentes,
-                    whatsapp_capturados,
-                    emails_capturados
-                `)
-                .eq("loja_id", lojaId)
-                .single();
+            return await dashboardRepository.clientesFrequentes(
+                operacaoId
+            );
+
+        });
+
+    }
+
+    async picoMovimento(operacaoId) {
+
+        return api.execute(async () => {
+
+            return await dashboardRepository.picoMovimento(
+                operacaoId
+            );
 
         });
 
