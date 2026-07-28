@@ -3,102 +3,92 @@
 // Portal Service
 // ======================================================
 
-import api from "../core/api.js";
+import http from "../core/http.js";
 import portalRepository from "../repositories/portal.repository.js";
 
 class PortalService {
 
-    async buscar(id) {
-
-        return api.execute(async () => {
-
-            return await portalRepository.buscar(id);
-
-        });
-
-    }
+    // ==================================================
+    // Buscar Configuração
+    // ==================================================
 
     async buscarPorOperacao(operacaoId) {
 
-        return api.execute(async () => {
-
-            return await portalRepository.buscarPorOperacao(
+        return await http.execute(() =>
+            portalRepository.buscarPorOperacao(
                 operacaoId
-            );
-
-        });
+            )
+        );
 
     }
 
-    async buscarAtivo(operacaoId) {
+    // ==================================================
+    // Buscar Portal Ativo
+    // ==================================================
 
-        return api.execute(async () => {
+    async buscarPortalAtivo(operacaoId) {
 
-            return await portalRepository.buscarAtivo(
+        return await http.execute(() =>
+            portalRepository.buscarPortalAtivo(
                 operacaoId
-            );
-
-        });
-
-    }
-
-    async criar(dados) {
-
-        return api.execute(async () => {
-
-            return await portalRepository.criar(dados);
-
-        });
+            )
+        );
 
     }
 
-    async atualizar(id, dados) {
+    // ==================================================
+    // Salvar Configuração
+    // ==================================================
 
-        return api.execute(async () => {
+    async salvarConfiguracao(
+        operacaoId,
+        dados
+    ) {
 
-            return await portalRepository.atualizar(
-                id,
-                dados
-            );
-
-        });
-
-    }
-
-    async atualizarLayout(operacaoId, dados) {
-
-        return api.execute(async () => {
-
-            return await portalRepository.atualizarLayout(
+        return await http.execute(() =>
+            portalRepository.salvarConfiguracao(
                 operacaoId,
                 dados
-            );
-
-        });
-
-    }
-
-    async ativar(operacaoId) {
-
-        return api.execute(async () => {
-
-            return await portalRepository.ativar(
-                operacaoId
-            );
-
-        });
+            )
+        );
 
     }
 
-    async desativar(operacaoId) {
+    // ==================================================
+    // Ativar
+    // ==================================================
 
-        return api.execute(async () => {
+    async ativar(id) {
 
-            return await portalRepository.desativar(
+        return await http.execute(() =>
+            portalRepository.ativar(id)
+        );
+
+    }
+
+    // ==================================================
+    // Desativar
+    // ==================================================
+
+    async desativar(id) {
+
+        return await http.execute(() =>
+            portalRepository.desativar(id)
+        );
+
+    }
+
+    // ==================================================
+    // Dashboard
+    // ==================================================
+
+    async dashboard(operacaoId) {
+
+        return await http.execute(() =>
+            portalRepository.dashboard(
                 operacaoId
-            );
-
-        });
+            )
+        );
 
     }
 
