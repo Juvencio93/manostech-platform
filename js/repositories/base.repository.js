@@ -5,7 +5,7 @@
 
 import { supabase } from "../core/supabase-client.js";
 
-export default class BaseRepository {
+class BaseRepository {
 
     constructor(table) {
 
@@ -13,35 +13,46 @@ export default class BaseRepository {
 
     }
 
+    // ==================================================
+    // Query Base
+    // ==================================================
+
     query() {
 
         return supabase.from(this.table);
 
     }
 
+    // ==================================================
+    // Listar
+    // ==================================================
+
     async listar({
+
         select = "*",
+
         orderBy = "created_at",
-        ascending = false,
-        limit = null
+
+        ascending = false
+
     } = {}) {
 
-        let query = this
+        const { data, error } = await this
             .query()
             .select(select)
-            .order(orderBy, { ascending });
-
-        if (limit) {
-            query = query.limit(limit);
-        }
-
-        const { data, error } = await query;
+            .order(orderBy, {
+                ascending
+            });
 
         if (error) throw error;
 
         return data;
 
     }
+
+    // ==================================================
+    // Buscar por ID
+    // ==================================================
 
     async buscar(id, select = "*") {
 
@@ -49,7 +60,7 @@ export default class BaseRepository {
             .query()
             .select(select)
             .eq("id", id)
-            .single();
+            .maybeSingle();
 
         if (error) throw error;
 
@@ -57,13 +68,17 @@ export default class BaseRepository {
 
     }
 
-    async buscarUm(coluna, valor, select = "*") {
+    // ==================================================
+    // Buscar Um Campo
+    // ==================================================
+
+    async buscarUm(campo, valor, select = "*") {
 
         const { data, error } = await this
             .query()
             .select(select)
-            .eq(coluna, valor)
-            .single();
+            .eq(campo, valor)
+            .maybeSingle();
 
         if (error) throw error;
 
@@ -71,23 +86,26 @@ export default class BaseRepository {
 
     }
 
-    async buscarTodos(coluna, valor, {
-        select = "*",
-        orderBy = "created_at",
-        ascending = false
-    } = {}) {
+    // ==================================================
+    // Buscar Vários
+    // ==================================================
+
+    async buscarPor(campo, valor, select = "*") {
 
         const { data, error } = await this
             .query()
             .select(select)
-            .eq(coluna, valor)
-            .order(orderBy, { ascending });
+            .eq(campo, valor);
 
         if (error) throw error;
 
         return data;
 
     }
+
+    // ==================================================
+    // Criar
+    // ==================================================
 
     async criar(dados) {
 
@@ -103,11 +121,21 @@ export default class BaseRepository {
 
     }
 
+    // ==================================================
+    // Atualizar
+    // ==================================================
+
     async atualizar(id, dados) {
 
         const { data, error } = await this
             .query()
-            .update(dados)
+            .update({
+
+                ...dados,
+
+                updated_at: new Date().toISOString()
+
+            })
             .eq("id", id)
             .select()
             .single();
@@ -117,6 +145,27 @@ export default class BaseRepository {
         return data;
 
     }
+
+    // ==================================================
+    // Upsert
+    // ==================================================
+
+    async salvar(dados) {
+
+        const { data, error } = await this
+            .query()
+            .upsert(dados)
+            .select();
+
+        if (error) throw error;
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Excluir
+    // ==================================================
 
     async excluir(id) {
 
@@ -131,13 +180,71 @@ export default class BaseRepository {
 
     }
 
-    async contar(coluna = "id") {
+    // ==================================================
+    // Soft Delete
+    // ==================================================
+
+    async desativar(id) {
+
+        return await this.atualizar(id, {
+
+            ativo: false
+
+        });
+
+    }
+
+    // ==================================================
+    // Ativar
+    // ==================================================
+
+    async ativar(id) {
+
+        return await this.atualizar(id, {
+
+            ativo: true
+
+        });
+
+    }
+
+    // ==================================================
+    // Existe
+    // ==================================================
+
+    async existe(campo, valor) {
 
         const { count, error } = await this
             .query()
-            .select(coluna, {
-                count: "exact",
-                head: true
+            .select("id", {
+
+                head: true,
+
+                count: "exact"
+
+            })
+            .eq(campo, valor);
+
+        if (error) throw error;
+
+        return count > 0;
+
+    }
+
+    // ==================================================
+    // Contar
+    // ==================================================
+
+    async contar() {
+
+        const { count, error } = await this
+            .query()
+            .select("id", {
+
+                head: true,
+
+                count: "exact"
+
             });
 
         if (error) throw error;
@@ -146,4 +253,121 @@ export default class BaseRepository {
 
     }
 
+    // ==================================================
+    // Paginação
+    // ==================================================
+
+    async paginar({
+
+        pagina = 1,
+
+        limite = 20,
+
+        orderBy = "created_at",
+
+        ascending = false,
+
+        select = "*"
+
+    } = {}) {
+
+        const inicio = (pagina - 1) * limite;
+
+        const fim = inicio + limite - 1;
+
+        const { data, error, count } = await this
+            .query()
+            .select(select, {
+
+                count: "exact"
+
+            })
+            .order(orderBy, {
+
+                ascending
+
+            })
+            .range(inicio, fim);
+
+        if (error) throw error;
+
+        return {
+
+            dados: data,
+
+            total: count,
+
+            pagina,
+
+            limite,
+
+            paginas: Math.ceil(count / limite)
+
+        };
+
+    }
+
+    // ==================================================
+    // Busca Texto
+    // ==================================================
+
+    async pesquisar(campo, texto) {
+
+        const { data, error } = await this
+            .query()
+            .select("*")
+            .ilike(campo, `%${texto}%`);
+
+        if (error) throw error;
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Filtro Dinâmico
+    // ==================================================
+
+    async filtrar(filtros = {}, options = {}) {
+
+        let query = this.query().select(
+            options.select || "*"
+        );
+
+        Object.entries(filtros).forEach(([campo, valor]) => {
+
+            if (
+                valor !== undefined &&
+                valor !== null &&
+                valor !== ""
+            ) {
+
+                query = query.eq(campo, valor);
+
+            }
+
+        });
+
+        if (options.orderBy) {
+
+            query = query.order(
+                options.orderBy,
+                {
+                    ascending:
+                        options.ascending ?? false
+                }
+            );
+
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        return data;
+
+    }
+
 }
+
+export default BaseRepository;
