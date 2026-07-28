@@ -14,97 +14,43 @@ class VisitanteRepository extends BaseRepository {
     }
 
     // ==================================================
-    // Buscar por Documento
+    // Operação
     // ==================================================
 
-    async buscarPorDocumento(documento) {
+    async listarPorOperacao(operacaoId) {
 
-        return await this.buscarUm(
-            "documento",
-            documento
-        );
+        return await this.filtrar(
 
-    }
-
-    // ==================================================
-    // Buscar por Telefone
-    // ==================================================
-
-    async buscarPorTelefone(telefone) {
-
-        return await this.buscarUm(
-            "telefone",
-            telefone
-        );
-
-    }
-
-    // ==================================================
-    // Buscar por Email
-    // ==================================================
-
-    async buscarPorEmail(email) {
-
-        return await this.buscarUm(
-            "email",
-            email
-        );
-
-    }
-
-    // ==================================================
-    // Listar por Unidade
-    // ==================================================
-
-    async listarPorUnidade(unidadeId) {
-
-        return await this.buscarTodos(
-            "unidade_id",
-            unidadeId,
             {
-                orderBy: "created_at",
+                unidade_id: operacaoId,
+                ativo: true
+            },
+
+            {
+                orderBy: "ultimo_acesso",
                 ascending: false
             }
+
         );
 
     }
 
     // ==================================================
-    // Buscar por Nome
+    // Buscar WhatsApp
     // ==================================================
 
-    async buscarPorNome(unidadeId, nome) {
+    async buscarPorWhatsapp(unidadeId, whatsapp) {
 
         const { data, error } = await this
             .query()
             .select("*")
             .eq("unidade_id", unidadeId)
-            .ilike("nome", `%${nome}%`)
-            .order("nome");
+            .eq("whatsapp", whatsapp)
+            .maybeSingle();
 
         if (error) throw error;
 
         return data;
-
-    }
-
-    // ==================================================
-    // Total de Visitantes
-    // ==================================================
-
-    async total(unidadeId) {
-
-        const { count, error } = await this
-            .query()
-            .select("id", {
-                count: "exact",
-                head: true
-            })
-            .eq("unidade_id", unidadeId);
-
-        if (error) throw error;
-
-        return count;
 
     }
 
@@ -114,16 +60,21 @@ class VisitanteRepository extends BaseRepository {
 
     async novosHoje(unidadeId) {
 
-        const hoje = new Date().toISOString().substring(0, 10);
+        const hoje = new Date();
+
+        hoje.setHours(0,0,0,0);
 
         const { count, error } = await this
             .query()
             .select("id", {
-                count: "exact",
-                head: true
+
+                head: true,
+
+                count: "exact"
+
             })
             .eq("unidade_id", unidadeId)
-            .gte("created_at", `${hoje}T00:00:00`);
+            .gte("primeiro_acesso", hoje.toISOString());
 
         if (error) throw error;
 
@@ -132,23 +83,61 @@ class VisitanteRepository extends BaseRepository {
     }
 
     // ==================================================
-    // Clientes Frequentes
+    // Recorrentes
     // ==================================================
 
-    async clientesFrequentes(unidadeId) {
+    async recorrentes(unidadeId) {
 
         const { data, error } = await this
             .query()
             .select("*")
             .eq("unidade_id", unidadeId)
-            .gte("total_visitas", 2)
+            .gt("total_visitas", 1)
             .order("total_visitas", {
+
                 ascending: false
+
             });
 
         if (error) throw error;
 
         return data;
+
+    }
+
+    // ==================================================
+    // Dashboard
+    // ==================================================
+
+    async dashboard(unidadeId) {
+
+        return {
+
+            total: await this.contar({
+
+                unidade_id: unidadeId,
+
+                ativo: true
+
+            }),
+
+            novos: await this.novosHoje(
+
+                unidadeId
+
+            ),
+
+            recorrentes: (
+
+                await this.recorrentes(
+
+                    unidadeId
+
+                )
+
+            ).length
+
+        };
 
     }
 
