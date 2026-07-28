@@ -3,72 +3,164 @@
 // Router
 // ======================================================
 
-import { ROUTES } from "./constants.js";
-
 class Router {
 
-    go(route) {
+    constructor() {
 
-        window.location.href = route;
+        this.routes = new Map();
 
-    }
-
-    login() {
-
-        this.go(ROUTES.LOGIN);
+        this.currentRoute = null;
 
     }
 
-    dashboard() {
+    // ==================================================
+    // Inicialização
+    // ==================================================
 
-        this.go(ROUTES.DASHBOARD);
+    init() {
 
-    }
+        this.registrarRotas();
 
-    eventos() {
+        window.addEventListener(
 
-        this.go(ROUTES.EVENTOS);
+            "hashchange",
 
-    }
+            () => this.navegar()
 
-    marketing() {
+        );
 
-        this.go(ROUTES.MARKETING);
-
-    }
-
-    visitantes() {
-
-        this.go(ROUTES.VISITANTES);
+        this.navegar();
 
     }
 
-    relatorios() {
+    // ==================================================
+    // Registrar Rotas
+    // ==================================================
 
-        this.go(ROUTES.RELATORIOS);
+    registrarRotas() {
+
+        this.add("", "pages/dashboard.html");
+
+        this.add("#dashboard", "pages/dashboard.html");
+
+        this.add("#empresas", "pages/empresas.html");
+
+        this.add("#operacoes", "pages/operacoes.html");
+
+        this.add("#portal", "pages/portal.html");
+
+        this.add("#visitantes", "pages/visitantes.html");
+
+        this.add("#campanhas", "pages/campanhas.html");
+
+        this.add("#relatorios", "pages/relatorios.html");
+
+        this.add("#financeiro", "pages/financeiro.html");
+
+        this.add("#configuracoes", "pages/configuracoes.html");
+
+        this.add("#usuarios", "pages/usuarios.html");
 
     }
 
-    configuracoes() {
+    // ==================================================
+    // Adicionar Rota
+    // ==================================================
 
-        this.go(ROUTES.CONFIGURACOES);
+    add(hash, page) {
 
-    }
-
-    back() {
-
-        window.history.back();
+        this.routes.set(hash, page);
 
     }
 
-    reload() {
+    // ==================================================
+    // Navegação
+    // ==================================================
 
-        window.location.reload();
+    async navegar() {
+
+        const hash = location.hash || "";
+
+        const page =
+
+            this.routes.get(hash)
+
+            ||
+
+            this.routes.get("");
+
+        this.currentRoute = hash;
+
+        await this.carregar(page);
+
+    }
+
+    // ==================================================
+    // Carregar Página
+    // ==================================================
+
+    async carregar(page) {
+
+        const container = document.getElementById("app");
+
+        if (!container) return;
+
+        try {
+
+            const response = await fetch(page);
+
+            if (!response.ok) {
+
+                throw new Error(page);
+
+            }
+
+            container.innerHTML =
+
+                await response.text();
+
+        }
+
+        catch (error) {
+
+            container.innerHTML = `
+
+                <div class="page-error">
+
+                    <h2>Página não encontrada</h2>
+
+                    <p>${page}</p>
+
+                </div>
+
+            `;
+
+            console.error(error);
+
+        }
+
+    }
+
+    // ==================================================
+    // Navegar Programaticamente
+    // ==================================================
+
+    go(hash) {
+
+        location.hash = hash;
+
+    }
+
+    // ==================================================
+    // Página Atual
+    // ==================================================
+
+    current() {
+
+        return this.currentRoute;
 
     }
 
 }
 
-const router = new Router();
-
-export default router;
+export default new Router();
