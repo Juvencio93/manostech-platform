@@ -8,127 +8,196 @@ import { supabase } from "../core/supabase-client.js";
 class DashboardRepository {
 
     // ==================================================
+    // Dashboard Geral
+    // ==================================================
+
+    async obterDashboard(operacaoId) {
+
+        const [
+
+            cache,
+
+            visitantes,
+
+            campanhas,
+
+            acessos,
+
+            dispositivos,
+
+            portal
+
+        ] = await Promise.all([
+
+            this.cache(operacaoId),
+
+            this.visitantes(operacaoId),
+
+            this.campanhas(operacaoId),
+
+            this.acessos(operacaoId),
+
+            this.dispositivos(operacaoId),
+
+            this.portal(operacaoId)
+
+        ]);
+
+        return {
+
+            cache,
+
+            visitantes,
+
+            campanhas,
+
+            acessos,
+
+            dispositivos,
+
+            portal,
+
+            atualizadoEm: new Date().toISOString()
+
+        };
+
+    }
+
+    // ==================================================
     // Cache
     // ==================================================
 
     async cache(operacaoId) {
 
-        const { data, error } = await supabase
-            .from("dashboard_cache")
-            .select("*")
-            .eq("unidade_id", operacaoId)
-            .maybeSingle();
+        const { data } = await supabase
 
-        if (error) throw error;
+            .from("dashboard_cache")
+
+            .select("*")
+
+            .eq("unidade_id", operacaoId)
+
+            .maybeSingle();
 
         return data;
 
     }
 
     // ==================================================
-    // Atualizar Cache
+    // Visitantes
     // ==================================================
 
-    async atualizarCache(operacaoId, dados) {
+    async visitantes(operacaoId) {
 
-        const { data, error } = await supabase
-            .from("dashboard_cache")
-            .update({
-                ...dados,
-                ultima_atualizacao: new Date().toISOString()
+        const { count } = await supabase
+
+            .from("visitantes")
+
+            .select("id", {
+
+                head: true,
+
+                count: "exact"
+
             })
+
             .eq("unidade_id", operacaoId)
-            .select()
-            .single();
 
-        if (error) throw error;
+            .eq("ativo", true);
 
-        return data;
+        return count || 0;
 
     }
 
     // ==================================================
-    // Período Ativo
+    // Campanhas
     // ==================================================
 
-    async periodoAtivo(operacaoId) {
+    async campanhas(operacaoId) {
 
-        const { data, error } = await supabase
-            .from("dashboard_periodos")
-            .select("*")
+        const { count } = await supabase
+
+            .from("campanhas")
+
+            .select("id", {
+
+                head: true,
+
+                count: "exact"
+
+            })
+
             .eq("unidade_id", operacaoId)
-            .eq("ativo", true)
+
+            .eq("ativo", true);
+
+        return count || 0;
+
+    }
+
+    // ==================================================
+    // Acessos
+    // ==================================================
+
+    async acessos(operacaoId) {
+
+        const { count } = await supabase
+
+            .from("acessos")
+
+            .select("id", {
+
+                head: true,
+
+                count: "exact"
+
+            })
+
+            .eq("unidade_id", operacaoId);
+
+        return count || 0;
+
+    }
+
+    // ==================================================
+    // Dispositivos
+    // ==================================================
+
+    async dispositivos(operacaoId) {
+
+        const { count } = await supabase
+
+            .from("dispositivos")
+
+            .select("id", {
+
+                head: true,
+
+                count: "exact"
+
+            })
+
+            .eq("unidade_id", operacaoId);
+
+        return count || 0;
+
+    }
+
+    // ==================================================
+    // Portal
+    // ==================================================
+
+    async portal(operacaoId) {
+
+        const { data } = await supabase
+
+            .from("portal_config")
+
+            .select("*")
+
+            .eq("unidade_id", operacaoId)
+
             .maybeSingle();
-
-        if (error) throw error;
-
-        return data;
-
-    }
-
-    // ==================================================
-    // Fluxo Diário
-    // ==================================================
-
-    async fluxoDiario(operacaoId) {
-
-        const { data, error } = await supabase
-            .from("vw_fluxo_diario")
-            .select("*")
-            .eq("unidade_id", operacaoId);
-
-        if (error) throw error;
-
-        return data;
-
-    }
-
-    // ==================================================
-    // Acessos por Hora
-    // ==================================================
-
-    async acessosPorHora(operacaoId) {
-
-        const { data, error } = await supabase
-            .from("vw_acessos_por_hora")
-            .select("*")
-            .eq("unidade_id", operacaoId);
-
-        if (error) throw error;
-
-        return data;
-
-    }
-
-    // ==================================================
-    // Clientes Frequentes
-    // ==================================================
-
-    async clientesFrequentes(operacaoId) {
-
-        const { data, error } = await supabase
-            .from("vw_clientes_frequentes")
-            .select("*")
-            .eq("unidade_id", operacaoId);
-
-        if (error) throw error;
-
-        return data;
-
-    }
-
-    // ==================================================
-    // Pico Movimento
-    // ==================================================
-
-    async picoMovimento(operacaoId) {
-
-        const { data, error } = await supabase
-            .from("vw_pico_movimento")
-            .select("*")
-            .eq("unidade_id", operacaoId);
-
-        if (error) throw error;
 
         return data;
 
