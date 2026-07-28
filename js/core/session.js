@@ -1,78 +1,118 @@
 // ======================================================
 // Manos Tech Platform
-// Session Manager
+// Session
 // ======================================================
 
-import auth from "./auth.js";
+import storage from "./storage.js";
 
 class Session {
 
     constructor() {
 
-        this.initialized = false;
+        this.CHAVE_USUARIO = "usuario";
+        this.CHAVE_EMPRESA = "empresa";
+        this.CHAVE_OPERACAO = "operacao";
 
     }
 
     // ==================================================
-    // Inicializa a sessão
+    // Usuário
     // ==================================================
 
-    async initialize() {
+    usuario() {
 
-        if (this.initialized) {
-            return true;
-        }
+        return storage.get(this.CHAVE_USUARIO);
 
-        const authenticated = await auth.initialize();
+    }
 
-        this.initialized = true;
+    definirUsuario(usuario) {
 
-        return authenticated;
+        storage.set(this.CHAVE_USUARIO, usuario);
+
+    }
+
+    limparUsuario() {
+
+        storage.remove(this.CHAVE_USUARIO);
 
     }
 
     // ==================================================
-    // Sessão atual
+    // Empresa
     // ==================================================
 
-    get() {
+    empresa() {
 
-        return auth.getSession();
+        return storage.get(this.CHAVE_EMPRESA);
+
+    }
+
+    definirEmpresa(empresa) {
+
+        storage.set(this.CHAVE_EMPRESA, empresa);
+
+    }
+
+    limparEmpresa() {
+
+        storage.remove(this.CHAVE_EMPRESA);
 
     }
 
     // ==================================================
-    // Usuário atual
+    // Operação
     // ==================================================
 
-    getUser() {
+    operacao() {
 
-        return auth.getUser();
+        return storage.get(this.CHAVE_OPERACAO);
+
+    }
+
+    definirOperacao(operacao) {
+
+        storage.set(this.CHAVE_OPERACAO, operacao);
+
+    }
+
+    limparOperacao() {
+
+        storage.remove(this.CHAVE_OPERACAO);
 
     }
 
     // ==================================================
-    // Está autenticado?
+    // Existe Operação
     // ==================================================
 
-    isAuthenticated() {
+    possuiOperacao() {
 
-        return auth.isAuthenticated();
+        return !!this.operacao();
 
     }
 
     // ==================================================
-    // Encerra sessão
+    // Existe Empresa
     // ==================================================
 
-    async destroy() {
+    possuiEmpresa() {
 
-        await auth.logout();
+        return !!this.empresa();
+
+    }
+
+    // ==================================================
+    // Limpar Sessão
+    // ==================================================
+
+    limpar() {
+
+        storage.remove(this.CHAVE_USUARIO);
+        storage.remove(this.CHAVE_EMPRESA);
+        storage.remove(this.CHAVE_OPERACAO);
 
     }
 
 }
 
-const session = new Session();
-
-export default session;
+export default new Session();
