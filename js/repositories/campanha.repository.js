@@ -14,21 +14,24 @@ class CampanhaRepository extends BaseRepository {
     }
 
     // ==================================================
-    // Listar por Operação
+    // Operação
     // ==================================================
 
     async listarPorOperacao(operacaoId) {
 
-        const { data, error } = await this
-            .query()
-            .select("*")
-            .eq("unidade_id", operacaoId)
-            .order("ordem", { ascending: true })
-            .order("titulo", { ascending: true });
+        return await this.filtrar(
 
-        if (error) throw error;
+            {
+                unidade_id: operacaoId,
+                ativo: true
+            },
 
-        return data;
+            {
+                orderBy: "ordem",
+                ascending: true
+            }
+
+        );
 
     }
 
@@ -45,9 +48,13 @@ class CampanhaRepository extends BaseRepository {
             .select("*")
             .eq("unidade_id", operacaoId)
             .eq("ativo", true)
-            .or(`data_inicio.is.null,data_inicio.lte.${agora}`)
-            .or(`data_fim.is.null,data_fim.gte.${agora}`)
-            .order("ordem", { ascending: true });
+            .lte("data_inicio", agora)
+            .gte("data_fim", agora)
+            .order("ordem", {
+
+                ascending: true
+
+            });
 
         if (error) throw error;
 
@@ -56,21 +63,37 @@ class CampanhaRepository extends BaseRepository {
     }
 
     // ==================================================
-    // Buscar por Tipo
+    // Buscar Completa
     // ==================================================
 
-    async listarPorTipo(operacaoId, tipo) {
+    async buscarCompleta(id) {
 
         const { data, error } = await this
             .query()
-            .select("*")
-            .eq("unidade_id", operacaoId)
-            .eq("tipo", tipo)
-            .order("ordem", { ascending: true });
+            .select(`
+                *,
+                campanhas_horarios(*)
+            `)
+            .eq("id", id)
+            .single();
 
         if (error) throw error;
 
         return data;
+
+    }
+
+    // ==================================================
+    // Reordenar
+    // ==================================================
+
+    async atualizarOrdem(id, ordem) {
+
+        return await this.atualizar(id, {
+
+            ordem
+
+        });
 
     }
 
@@ -82,8 +105,7 @@ class CampanhaRepository extends BaseRepository {
 
         return await this.atualizar(id, {
 
-            ativo: true,
-            updated_at: new Date().toISOString()
+            ativo: true
 
         });
 
@@ -97,25 +119,62 @@ class CampanhaRepository extends BaseRepository {
 
         return await this.atualizar(id, {
 
-            ativo: false,
-            updated_at: new Date().toISOString()
+            ativo: false
 
         });
 
     }
 
     // ==================================================
-    // Alterar Ordem
+    // Banner Principal
     // ==================================================
 
-    async alterarOrdem(id, ordem) {
+    async bannerPrincipal(operacaoId) {
 
-        return await this.atualizar(id, {
+        const { data, error } = await this
+            .query()
+            .select("*")
+            .eq("unidade_id", operacaoId)
+            .eq("ativo", true)
+            .order("ordem")
+            .limit(1)
+            .maybeSingle();
 
-            ordem,
-            updated_at: new Date().toISOString()
+        if (error) throw error;
+
+        return data;
+
+    }
+
+    // ==================================================
+    // Dashboard
+    // ==================================================
+
+    async dashboard(operacaoId) {
+
+        const total = await this.contar({
+
+            unidade_id: operacaoId
 
         });
+
+        const ativas = await this.contar({
+
+            unidade_id: operacaoId,
+
+            ativo: true
+
+        });
+
+        return {
+
+            total,
+
+            ativas,
+
+            inativas: total - ativas
+
+        };
 
     }
 
