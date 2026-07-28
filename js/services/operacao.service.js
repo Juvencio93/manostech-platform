@@ -1,198 +1,90 @@
 // ======================================================
 // Manos Tech Platform
-// Operacao Service
+// Operação Service
 // ======================================================
 
-import api from "../core/api.js";
-
+import api from "../core/http.js";
 import operacaoRepository from "../repositories/operacao.repository.js";
 
 class OperacaoService {
 
-    // ==================================================
-    // Buscar
-    // ==================================================
+    async listar() {
+
+        return await api.execute(() =>
+            operacaoRepository.listar()
+        );
+
+    }
 
     async buscar(id) {
 
-        return api.execute(async () => {
-
-            return await operacaoRepository.buscar(id);
-
-        });
+        return await api.execute(() =>
+            operacaoRepository.buscar(id)
+        );
 
     }
 
-    // ==================================================
-    // Listar
-    // ==================================================
+    async buscarCompleta(id) {
 
-    async listar() {
-
-        return api.execute(async () => {
-
-            return await operacaoRepository.listar();
-
-        });
+        return await api.execute(() =>
+            operacaoRepository.buscarCompleta(id)
+        );
 
     }
-
-    // ==================================================
-    // Empresa
-    // ==================================================
 
     async listarPorEmpresa(empresaId) {
 
-        return api.execute(async () => {
-
-            return await operacaoRepository.listarPorEmpresa(
+        return await api.execute(() =>
+            operacaoRepository.listarPorEmpresa(
                 empresaId
-            );
-
-        });
+            )
+        );
 
     }
-
-    // ==================================================
-    // Empresas
-    // ==================================================
-
-    async empresas(empresaId) {
-
-        return api.execute(async () => {
-
-            return await operacaoRepository.empresas(
-                empresaId
-            );
-
-        });
-
-    }
-
-    // ==================================================
-    // Filiais
-    // ==================================================
-
-    async filiais(empresaId) {
-
-        return api.execute(async () => {
-
-            return await operacaoRepository.filiais(
-                empresaId
-            );
-
-        });
-
-    }
-
-    // ==================================================
-    // Eventos
-    // ==================================================
-
-    async eventos(empresaId) {
-
-        return api.execute(async () => {
-
-            return await operacaoRepository.eventos(
-                empresaId
-            );
-
-        });
-
-    }
-
-    // ==================================================
-    // Buscar por Tipo
-    // ==================================================
 
     async listarPorTipo(empresaId, tipo) {
 
-        return api.execute(async () => {
-
-            return await operacaoRepository.listarPorTipo(
+        return await api.execute(() =>
+            operacaoRepository.listarPorTipo(
                 empresaId,
                 tipo
-            );
-
-        });
-
-    }
-
-    // ==================================================
-    // Ativas
-    // ==================================================
-
-    async listarAtivas(empresaId) {
-
-        return api.execute(async () => {
-
-            return await operacaoRepository.listarAtivas(
-                empresaId
-            );
-
-        });
+            )
+        );
 
     }
-
-    // ==================================================
-    // Buscar por Nome
-    // ==================================================
-
-    async buscarPorNome(empresaId, nome) {
-
-        return api.execute(async () => {
-
-            return await operacaoRepository.buscarPorNome(
-                empresaId,
-                nome
-            );
-
-        });
-
-    }
-
-    // ==================================================
-    // Criar
-    // ==================================================
 
     async criar(dados) {
 
-        return api.execute(async () => {
-
-            return await operacaoRepository.criar(dados);
-
-        });
+        return await api.execute(() =>
+            operacaoRepository.criar(dados)
+        );
 
     }
-
-    // ==================================================
-    // Atualizar
-    // ==================================================
 
     async atualizar(id, dados) {
 
-        return api.execute(async () => {
-
-            return await operacaoRepository.atualizar(
+        return await api.execute(() =>
+            operacaoRepository.atualizar(
                 id,
                 dados
-            );
-
-        });
+            )
+        );
 
     }
 
-    // ==================================================
-    // Excluir
-    // ==================================================
-
     async excluir(id) {
 
-        return api.execute(async () => {
+        return await api.execute(() =>
+            operacaoRepository.desativar(id)
+        );
 
-            return await operacaoRepository.excluir(id);
+    }
 
-        });
+    async dashboard(id) {
+
+        return await api.execute(() =>
+            operacaoRepository.dashboard(id)
+        );
 
     }
 
