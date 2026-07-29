@@ -1,90 +1,106 @@
-// ======================================================
-// Manos Tech Platform
-// Operação Service
-// ======================================================
+// js/services/operacao.service.js
 
-import api from "../core/http.js";
-import operacaoRepository from "../repositories/operacao.repository.js";
+import { supabase } from "../core/supabase.js";
 
 class OperacaoService {
 
-    async listar() {
-
-        return await api.execute(() =>
-            operacaoRepository.listar()
-        );
-
-    }
-
     async buscar(id) {
 
-        return await api.execute(() =>
-            operacaoRepository.buscar(id)
-        );
+        const { data, error } = await supabase
+            .from("vw_operacoes")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+        if (error) throw error;
+
+        return data;
 
     }
 
-    async buscarCompleta(id) {
+    async buscarPorToken(token) {
 
-        return await api.execute(() =>
-            operacaoRepository.buscarCompleta(id)
-        );
+        const { data, error } = await supabase
+            .from("vw_operacoes")
+            .select("*")
+            .eq("token", token)
+            .single();
 
-    }
+        if (error) throw error;
 
-    async listarPorEmpresa(empresaId) {
-
-        return await api.execute(() =>
-            operacaoRepository.listarPorEmpresa(
-                empresaId
-            )
-        );
+        return data;
 
     }
 
-    async listarPorTipo(empresaId, tipo) {
+    async listarEmpresa(empresaId) {
 
-        return await api.execute(() =>
-            operacaoRepository.listarPorTipo(
-                empresaId,
-                tipo
-            )
-        );
+        const { data, error } = await supabase
+            .from("vw_operacoes")
+            .select("*")
+            .eq("empresa_id", empresaId)
+            .order("nome");
 
-    }
+        if (error) throw error;
 
-    async criar(dados) {
-
-        return await api.execute(() =>
-            operacaoRepository.criar(dados)
-        );
+        return data || [];
 
     }
 
-    async atualizar(id, dados) {
+    async listarUnidade(unidadeId) {
 
-        return await api.execute(() =>
-            operacaoRepository.atualizar(
-                id,
-                dados
-            )
-        );
+        const { data, error } = await supabase
+            .from("vw_operacoes")
+            .select("*")
+            .eq("unidade_id", unidadeId)
+            .order("nome");
 
-    }
+        if (error) throw error;
 
-    async excluir(id) {
-
-        return await api.execute(() =>
-            operacaoRepository.desativar(id)
-        );
+        return data || [];
 
     }
 
-    async dashboard(id) {
+    async portal(id) {
 
-        return await api.execute(() =>
-            operacaoRepository.dashboard(id)
-        );
+        const { data, error } = await supabase
+            .from("portal_config")
+            .select("*")
+            .eq("operacao_id", id)
+            .single();
+
+        if (error) throw error;
+
+        return data;
+
+    }
+
+    async patrocinadores(id) {
+
+        const { data, error } = await supabase
+            .from("portal_patrocinadores")
+            .select("*")
+            .eq("operacao_id", id)
+            .eq("ativo", true)
+            .order("ordem");
+
+        if (error) throw error;
+
+        return data || [];
+
+    }
+
+    async banners(id) {
+
+        const { data, error } = await supabase
+            .from("portal_banners")
+            .select("*")
+            .eq("operacao_id", id)
+            .eq("ativo", true)
+            .order("ordem");
+
+        if (error) throw error;
+
+        return data || [];
 
     }
 
